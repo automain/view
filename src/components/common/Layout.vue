@@ -59,16 +59,31 @@
         </el-scrollbar>
       </el-aside>
       <el-container class="main-container">
-        <el-header style="text-align: right; font-size: 12px">
-          <el-dropdown>
-            <i class="el-icon-setting" style="margin-right: 15px"></i>
-            <el-dropdown-menu slot="dropdown">
-              <el-dropdown-item>查看</el-dropdown-item>
-              <el-dropdown-item>新增</el-dropdown-item>
-              <el-dropdown-item>删除</el-dropdown-item>
-            </el-dropdown-menu>
-          </el-dropdown>
-          <span>王小虎</span>
+        <el-header class="fixed-header">
+          <div class="hamburger-container">
+            <i class="el-icon-s-fold"></i>
+          </div>
+          <div class="breadcrumb-container">
+            <el-breadcrumb separator="/">
+              <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
+              <el-breadcrumb-item>
+                <a href="/">活动管理</a>
+              </el-breadcrumb-item>
+              <el-breadcrumb-item>活动列表</el-breadcrumb-item>
+              <el-breadcrumb-item>活动详情</el-breadcrumb-item>
+            </el-breadcrumb>
+          </div>
+          <div class="right-menu">
+            <el-dropdown>
+              <i class="el-icon-setting"></i>
+              <el-dropdown-menu slot="dropdown">
+                <el-dropdown-item>查看</el-dropdown-item>
+                <el-dropdown-item>新增</el-dropdown-item>
+                <el-dropdown-item>删除</el-dropdown-item>
+              </el-dropdown-menu>
+            </el-dropdown>
+            <span>王小虎</span>
+          </div>
         </el-header>
 
         <el-main>
@@ -83,12 +98,6 @@
   </div>
 </template>
 <style lang="scss">
-.main-container {
-  min-height: 100%;
-  transition: margin-left 0.28s;
-  margin-left: 210px;
-  position: relative;
-}
 .sidebar-container {
   background-color: #304156;
   height: 100%;
@@ -97,7 +106,7 @@
   top: 0;
   bottom: 0;
   left: 0;
-  z-index: 1001;
+  z-index: 9;
   overflow: hidden;
   // reset element-ui css
   .horizontal-collapse-transition {
@@ -107,6 +116,9 @@
   // menu hover
   .submenu-title-noDropdown,
   .el-submenu__title {
+    i {
+      color: #bfcbd9;
+    }
     &:hover {
       background-color: #263445 !important;
     }
@@ -129,6 +141,40 @@
     &:hover {
       background-color: #001528 !important;
     }
+  }
+}
+
+.main-container {
+  min-height: 100%;
+  transition: margin-left 0.28s;
+  margin-left: 210px;
+  position: relative;
+  .fixed-header {
+    position: fixed;
+    top: 0;
+    right: 0;
+    z-index: 9;
+    width: calc(100% - 210px);
+    -webkit-transition: width 0.28s;
+    transition: width 0.28s;
+    padding: 0 10px;
+    background: #ffffff;
+  }
+  .hamburger-container {
+    padding: 10px;
+    line-height: 20px;
+    height: 100%;
+    float: left;
+    cursor: pointer;
+    font-size: 20px;
+  }
+  .breadcrumb-container {
+    padding: 15px;
+    display: inline-block;
+  }
+  .right-menu {
+    float: right;
+    height: 100%;
   }
 }
 </style>
