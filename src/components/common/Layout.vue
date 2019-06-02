@@ -5,8 +5,8 @@
         <el-scrollbar wrap-class="scrollbar-wrapper">
           <el-menu
             class="sidebar-menu"
-            background-color="#304156"
-            text-color="#bfcbd9"
+            background-color="#20222A"
+            text-color="#f5fffa"
             :default-openeds="defaultOpeneds"
           >
             <el-submenu class="next-menu" index="1">
@@ -59,7 +59,7 @@
         </el-scrollbar>
       </el-aside>
       <el-container class="main-container">
-        <el-header class="fixed-header">
+        <el-header height="50px" class="fixed-header">
           <div class="hamburger-container">
             <i class="el-icon-s-fold"></i>
           </div>
@@ -73,33 +73,49 @@
               <el-breadcrumb-item>活动详情</el-breadcrumb-item>
             </el-breadcrumb>
           </div>
-          <div class="right-menu">
-            <el-dropdown>
-              <i class="el-icon-setting"></i>
+          <div class="right-menu-container">
+            <el-dropdown class="info-drop-down">
+              <div class="head-img-container">
+                <img
+                  class="head-img"
+                  src="https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif?imageView2/1/w/80/h/80"
+                  alt="头像"
+                >
+                <div class="user-name">
+                  王小虎
+                  <i class="el-icon-arrow-down el-icon--right"></i>
+                </div>
+              </div>
               <el-dropdown-menu slot="dropdown">
-                <el-dropdown-item>查看</el-dropdown-item>
-                <el-dropdown-item>新增</el-dropdown-item>
-                <el-dropdown-item>删除</el-dropdown-item>
+                <el-dropdown-item>基本资料</el-dropdown-item>
+                <el-dropdown-item>修改密码</el-dropdown-item>
+                <el-dropdown-item divided>退出登录</el-dropdown-item>
               </el-dropdown-menu>
             </el-dropdown>
-            <span>王小虎</span>
           </div>
         </el-header>
 
         <el-main>
-          <el-table :data="tableData">
-            <el-table-column prop="date" label="日期" width="140"></el-table-column>
-            <el-table-column prop="name" label="姓名" width="120"></el-table-column>
-            <el-table-column prop="address" label="地址"></el-table-column>
-          </el-table>
+          <el-tabs v-model="editableTabsValue" type="border-card" closable @tab-remove="removeTab">
+            <el-tab-pane v-for="item in editableTabs" :key="item.name" :label="item.title">
+              <el-table :data="tableData">
+                <el-table-column prop="date" label="日期" width="140"></el-table-column>
+                <el-table-column prop="name" label="姓名" width="120"></el-table-column>
+                <el-table-column prop="address" label="地址"></el-table-column>
+              </el-table>
+            </el-tab-pane>
+          </el-tabs>
         </el-main>
       </el-container>
     </el-container>
   </div>
 </template>
 <style lang="scss">
+body {
+  margin: 0px;
+}
 .sidebar-container {
-  background-color: #304156;
+  background-color: #20222a;
   height: 100%;
   position: fixed;
   font-size: 0px;
@@ -108,23 +124,19 @@
   left: 0;
   z-index: 9;
   overflow: hidden;
-  // reset element-ui css
   .horizontal-collapse-transition {
     transition: 0s width ease-in-out, 0s padding-left ease-in-out,
       0s padding-right ease-in-out;
   }
-  // menu hover
   .submenu-title-noDropdown,
   .el-submenu__title {
     i {
-      color: #bfcbd9;
-    }
-    &:hover {
-      background-color: #263445 !important;
+      color: #f5fffa;
     }
   }
   .scrollbar-wrapper {
     overflow-x: hidden !important;
+    margin-right: -18px !important;
   }
 
   .el-scrollbar__bar.is-vertical {
@@ -136,10 +148,9 @@
   }
   & .next-menu .el-submenu > .el-submenu__title,
   & .el-submenu .el-menu-item {
-    background-color: #1f2d3d !important;
-
+    background-color: #1a1b22 !important;
     &:hover {
-      background-color: #001528 !important;
+      background-color: #000000 !important;
     }
   }
 }
@@ -147,7 +158,7 @@
 .main-container {
   min-height: 100%;
   transition: margin-left 0.28s;
-  margin-left: 210px;
+  padding-left: 210px;
   position: relative;
   .fixed-header {
     position: fixed;
@@ -158,23 +169,43 @@
     -webkit-transition: width 0.28s;
     transition: width 0.28s;
     padding: 0 10px;
-    background: #ffffff;
+    background: #f5fffa;
+    .hamburger-container {
+      padding-left: 5px;
+      padding-top: 7px;
+      float: left;
+      cursor: pointer;
+      font-size: 25px;
+    }
+    .breadcrumb-container {
+      padding: 18px;
+      display: inline-block;
+    }
+    .right-menu-container {
+      float: right;
+      height: 100%;
+      .info-drop-down {
+        cursor: pointer;
+        .head-img-container {
+          height: 40px;
+          padding-top: 6px;
+        }
+        .head-img {
+          border-radius: 10px;
+          width: 40px;
+          height: 40px;
+        }
+        .user-name {
+          float: right;
+          padding-top: 12px;
+          padding-left: 10px;
+        }
+      }
+    }
   }
-  .hamburger-container {
-    padding: 10px;
-    line-height: 20px;
-    height: 100%;
-    float: left;
-    cursor: pointer;
-    font-size: 20px;
-  }
-  .breadcrumb-container {
-    padding: 15px;
-    display: inline-block;
-  }
-  .right-menu {
-    float: right;
-    height: 100%;
+  .el-main {
+    padding: 50px 10px 10px 10px;
+    background-color: #f5fffa;
   }
 }
 </style>
@@ -189,8 +220,50 @@ export default {
     };
     return {
       defaultOpeneds: ["1", "2", "3"],
-      tableData: Array(20).fill(item)
+      tableData: Array(20).fill(item),
+      editableTabsValue: "2",
+      editableTabs: [
+        {
+          title: "Tab 1",
+          name: "1",
+          content: "Tab 1 content"
+        },
+        {
+          title: "Tab 2",
+          name: "2",
+          content: "Tab 2 content"
+        }
+      ],
+      tabIndex: 2
     };
+  },
+  methods: {
+    addTab(targetName) {
+      let newTabName = ++this.tabIndex + "";
+      this.editableTabs.push({
+        title: "New Tab",
+        name: newTabName,
+        content: "New Tab content"
+      });
+      this.editableTabsValue = newTabName;
+    },
+    removeTab(targetName) {
+      let tabs = this.editableTabs;
+      let activeName = this.editableTabsValue;
+      if (activeName === targetName) {
+        tabs.forEach((tab, index) => {
+          if (tab.name === targetName) {
+            let nextTab = tabs[index + 1] || tabs[index - 1];
+            if (nextTab) {
+              activeName = nextTab.name;
+            }
+          }
+        });
+      }
+
+      this.editableTabsValue = activeName;
+      this.editableTabs = tabs.filter(tab => tab.name !== targetName);
+    }
   }
 };
 </script>
