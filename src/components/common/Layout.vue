@@ -3,7 +3,14 @@
     <el-container>
       <el-aside class="sidebar-container">
         <el-scrollbar wrap-class="scrollbar-wrapper">
-          <el-menu class="sidebar-menu" :default-active="$route.path" :collapse="isCollapse" router>
+          <el-menu
+            class="sidebar-menu"
+            :default-active="$route.path"
+            :collapse="isCollapse"
+            router
+            background-color="#1a1b22"
+            text-color="#f5fffa"
+          >
             <el-menu-item index="/main">
               <i class="el-icon-s-home"></i>
               <span slot="title">首页</span>
@@ -16,16 +23,6 @@
         <el-header class="fixed-header">
           <div class="hamburger-container">
             <i :class="this.hamburgerIconClass" @click="menuCollapse()"></i>
-          </div>
-          <div class="breadcrumb-container">
-            <el-breadcrumb separator="/">
-              <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
-              <el-breadcrumb-item>
-                <a href="/">活动管理</a>
-              </el-breadcrumb-item>
-              <el-breadcrumb-item>活动列表</el-breadcrumb-item>
-              <el-breadcrumb-item>活动详情</el-breadcrumb-item>
-            </el-breadcrumb>
           </div>
           <div class="right-menu-container">
             <el-dropdown class="info-drop-down">
@@ -43,9 +40,13 @@
               <el-dropdown-menu slot="dropdown">
                 <el-dropdown-item>基本资料</el-dropdown-item>
                 <el-dropdown-item>修改密码</el-dropdown-item>
-                <el-dropdown-item divided>退出登录</el-dropdown-item>
               </el-dropdown-menu>
             </el-dropdown>
+            <div class="logout-btn">
+              <el-tooltip class="item" effect="dark" content="退出登录" placement="bottom-end">
+                  <i class="el-icon-switch-button"></i>
+              </el-tooltip>
+            </div>
           </div>
         </el-header>
 
@@ -67,7 +68,9 @@
             </el-tabs>
           </div>
           <div class="content-wrap">
-            <router-view />
+            <el-scrollbar :style="{height: (this.fullHeight-120)+'px'}">
+              <router-view />
+            </el-scrollbar>
           </div>
         </el-main>
       </el-container>
@@ -80,7 +83,7 @@ body {
   margin: 0px;
 }
 .sidebar-container {
-  background-color: $sideBarBackgroundColor;
+  background-color: $menuBackgroundColor;
   height: 100%;
   position: fixed;
   font-size: 0px;
@@ -90,33 +93,29 @@ body {
   z-index: 9;
   overflow: hidden;
   width: $sideBarWidth !important;
-  transition: width 0.3s !important;
-  -moz-transition: width 0.3s !important;
-  -webkit-transition: width 0.3s !important;
-  -o-transition: width 0.3s !important;
+  transition: width $animateSeconds !important;
+  -moz-transition: width $animateSeconds !important;
+  -webkit-transition: width $animateSeconds !important;
+  -o-transition: width $animateSeconds !important;
   .horizontal-collapse-transition {
-    transition: 0s width ease-in-out, 0s padding-left ease-in-out, 0s padding-right ease-in-out;
+    transition: 0s width ease-in-out, 0s padding-left ease-in-out,
+      0s padding-right ease-in-out;
   }
   .scrollbar-wrapper {
     overflow-x: hidden !important;
     margin-right: -18px !important;
-    .sidebar-menu {
-      background-color: $sideBarBackgroundColor;
-    }
-    .el-menu{
+    .el-menu {
       border-right: none;
     }
   }
 
   .el-submenu__title,
   & .el-menu-item {
-    color: $mainBackgroundColor !important;
-    background-color: $menuBackgroundColor !important;
     &:hover {
       background-color: $hoverMenuBackgroundColor !important;
     }
     i {
-      color: $mainBackgroundColor;
+      color: $mainBackgroundColor !important;
     }
   }
 
@@ -137,10 +136,10 @@ body {
 .main-container {
   min-height: 100%;
   padding-left: $sideBarWidth;
-  transition: padding-left 0.3s !important;
-  -moz-transition: padding-left 0.3s !important;
-  -webkit-transition: padding-left 0.3s !important;
-  -o-transition: padding-left 0.3s !important;
+  transition: padding-left $animateSeconds !important;
+  -moz-transition: padding-left $animateSeconds !important;
+  -webkit-transition: padding-left $animateSeconds !important;
+  -o-transition: padding-left $animateSeconds !important;
   position: relative;
   .fixed-header {
     position: fixed;
@@ -157,10 +156,6 @@ body {
       float: left;
       cursor: pointer;
       font-size: 25px;
-    }
-    .breadcrumb-container {
-      padding: 18px;
-      display: inline-block;
     }
     .right-menu-container {
       float: right;
@@ -182,23 +177,42 @@ body {
           padding-left: 10px;
         }
       }
+      .logout-btn {
+        float: right;
+        padding-top: 15px;
+        font-size: 20px;
+        padding-left: 20px;
+        cursor: pointer;
+      }
     }
   }
   .el-main {
     padding: 50px 10px 10px 10px;
     background-color: $mainBackgroundColor;
-    .el-tabs__header{
-      border-bottom: none;
+    .el-tabs {
+      z-index: 2;
+      position: fixed;
+      right: 9px;
+      left: calc(#{$sideBarWidth} + 9px);
+      transition: left $animateSeconds !important;
+      -moz-transition: left $animateSeconds !important;
+      -webkit-transition: left $animateSeconds !important;
+      -o-transition: left $animateSeconds !important;
+      .el-tabs__content {
+        display: none;
+      }
     }
-    .el-tabs__content {
-      padding: 0px;
-    }
-    .content-wrap{
-      background: #FFF;
-      border: 1px solid #DCDFE6;
-      border-top: none;
-      -webkit-box-shadow: 0 2px 4px 0 rgba(0,0,0,.12), 0 0 6px 0 rgba(0,0,0,.04);
-      box-shadow: 0 2px 4px 0 rgba(0,0,0,.12), 0 0 6px 0 rgba(0,0,0,.04);
+
+    .content-wrap {
+      margin-top: 50px;
+      background: #fff;
+      border: 1px solid #dcdfe6;
+      -webkit-box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.12),
+        0 0 6px 0 rgba(0, 0, 0, 0.04);
+      box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.12), 0 0 6px 0 rgba(0, 0, 0, 0.04);
+      .el-scrollbar .el-scrollbar__wrap {
+        overflow-x: hidden;
+      }
     }
   }
 }
@@ -212,8 +226,14 @@ body {
     .fixed-header {
       width: calc(100% - #{$hideBarWidth});
     }
+    .el-main .el-tabs {
+      left: calc(#{$hideBarWidth} + 9px);
+      transition: left $animateSeconds !important;
+      -moz-transition: left $animateSeconds !important;
+      -webkit-transition: left $animateSeconds !important;
+      -o-transition: left $animateSeconds !important;
+    }
   }
-
   .el-submenu {
     overflow: hidden;
     & > .el-submenu__title > .el-submenu__icon-arrow {
@@ -264,7 +284,8 @@ export default {
         }
       ],
       isCollapse: false,
-      hamburgerIconClass: "el-icon-s-fold"
+      hamburgerIconClass: "el-icon-s-fold",
+      fullHeight: document.documentElement.clientHeight
     };
   },
   methods: {
@@ -306,7 +327,15 @@ export default {
     } else {
       this.$store.commit("add_tabs", { menuPath: "/main", menuName: "首页" });
       this.$store.commit("set_active_index", "/main");
+      this.$router.push("/main");
     }
+    const that = this;
+    window.onresize = () => {
+      return (() => {
+        window.fullHeight = document.documentElement.clientHeight;
+        that.fullHeight = window.fullHeight;
+      })();
+    };
   },
   computed: {
     openTab() {
@@ -340,6 +369,16 @@ export default {
           menuName: to.name
         });
         this.$store.commit("set_active_index", to.path);
+      }
+    },
+    fullHeight(val) {
+      if (!this.timer) {
+        this.fullHeight = val;
+        this.timer = true;
+        let that = this;
+        setTimeout(function() {
+          that.timer = false;
+        }, 400);
       }
     }
   }
