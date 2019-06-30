@@ -6,7 +6,13 @@ Vue.use(Router)
 
 export default new Router({
   routes: [
-    { path: '/', component: Layout },
-    { path: '/about', component: () => import('@/components/About') }
+    {
+      path: '/', component: Layout,
+      children: [
+        { path: '/main', name: '首页', component: () => import('@/views/common/Main') },
+        { path: '/tableTest', name: '表格', component: () => import('@/views/common/TableTest') }
+      ]
+    },
+
   ]
 })
