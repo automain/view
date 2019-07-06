@@ -10,7 +10,7 @@
       </el-submenu>
       <el-menu-item :index="item.menuPath" :key="key" v-else>
         <i :class="item.menuIcon" style="color:#f5fffa;"></i>
-        <span slot="title" @click="setMenuName(item.menuName)">{{item.menuName}}</span>
+        <span slot="title">{{item.menuName}}</span>
       </el-menu-item>
     </template>
   </div>
@@ -19,11 +19,6 @@
 <script>
 export default {
   props: ["menuData"],
-  name: "Menu",
-  methods: {
-    setMenuName(name) {
-      this.$store.commit("setSubMenuName", name);
-    }
-  }
+  name: "Menu"
 };
 </script>

@@ -16,7 +16,7 @@
               <i class="el-icon-s-home"></i>
               <span slot="title">首页</span>
             </el-menu-item>
-            <Menu :menuData="this.menuData" ref="infiniteMenu"></Menu>
+            <Menu :menuData="this.menuData"></Menu>
           </el-menu>
         </el-scrollbar>
       </el-aside>
@@ -237,7 +237,7 @@ body {
 </style>
 <script>
 import Menu from "@/components/common/Menu";
-import { mapState } from "vuex";
+import local from "@/local";
 export default {
   components: { Menu },
   data() {
@@ -252,7 +252,7 @@ export default {
               menuIcon: "el-icon-location",
               children: [
                 {
-                  menuPath: "/tableTest?id=1",
+                  menuPath: "/tableTest",
                   menuName: "表格",
                   menuIcon: "el-icon-circle-plus"
                 }
@@ -269,7 +269,7 @@ export default {
               menuIcon: "el-icon-location",
               children: [
                 {
-                  menuPath: "/tableTest",
+                  menuPath: "/tableTest2",
                   menuName: "表格2",
                   menuIcon: "el-icon-circle-plus"
                 }
@@ -295,8 +295,24 @@ export default {
       this.breadcrumbItems = indexPath;
       let length = this.breadcrumbItems.length;
       if (length > 0) {
-        this.breadcrumbItems[length - 1] = this.currentSubMenuName;
+        let key = this.breadcrumbItems[length - 1];
+        if (this.menuMap.has(key)) {
+          this.breadcrumbItems[length - 1] = this.menuMap.get(key);
+        }
       }
+      local.set("breadcrumb", this.breadcrumbItems);
+    },
+    getMenuMap(map, menuData) {
+      for (let index in menuData) {
+        let menu = menuData[index];
+        if (menu.menuPath && !menu.children) {
+          map.set(menu.menuPath, menu.menuName);
+        }
+        if (menu.children) {
+          this.getMenuMap(map, menu.children);
+        }
+      }
+      return map;
     }
   },
   mounted() {
@@ -307,11 +323,19 @@ export default {
         that.fullHeight = window.fullHeight;
       })();
     };
+    if (this.$route.path == "/") {
+      this.$router.push("/main");
+    }
+    this.breadcrumbItems = local.get("breadcrumb");
   },
   computed: {
-    ...mapState(["currentSubMenuName"]),
     hamburgerClass() {
       return { hideSidebar: this.isCollapse };
+    },
+    menuMap() {
+      let map = this.getMenuMap(new Map(), this.menuData);
+      map.set("/main", "首页");
+      return map;
     }
   },
   watch: {

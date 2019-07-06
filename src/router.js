@@ -10,7 +10,8 @@ export default new Router({
       path: '/', component: Layout,
       children: [
         { path: '/main', name: '首页', component: () => import('@/views/common/Main') },
-        { path: '/tableTest', name: '表格', component: () => import('@/views/common/TableTest') }
+        { path: '/tableTest', name: '表格', component: () => import('@/views/common/TableTest') },
+        { path: '/tableTest2', name: '表格2', component: () => import('@/views/common/TableTest') },
       ]
     },
 
