@@ -10,12 +10,13 @@
             router
             background-color="#1a1b22"
             text-color="#f5fffa"
+            @select="handleMenuSelect"
           >
             <el-menu-item index="/main">
               <i class="el-icon-s-home"></i>
               <span slot="title">首页</span>
             </el-menu-item>
-            <Menu :menuData="this.menuData"></Menu>
+            <Menu :menuData="this.menuData" ref="infiniteMenu"></Menu>
           </el-menu>
         </el-scrollbar>
       </el-aside>
@@ -23,6 +24,11 @@
         <el-header class="fixed-header">
           <div class="hamburger-container">
             <i :class="this.hamburgerIconClass" @click="menuCollapse()"></i>
+          </div>
+          <div class="breadcrumb-container">
+            <el-breadcrumb separator="/">
+              <el-breadcrumb-item v-for="(item, key) in breadcrumbItems" :key="key">{{item}}</el-breadcrumb-item>
+            </el-breadcrumb>
           </div>
           <div class="right-menu-container">
             <el-dropdown class="info-drop-down">
@@ -44,31 +50,15 @@
             </el-dropdown>
             <div class="logout-btn">
               <el-tooltip class="item" effect="dark" content="退出登录" placement="bottom-end">
-                  <i class="el-icon-switch-button"></i>
+                <i class="el-icon-switch-button"></i>
               </el-tooltip>
             </div>
           </div>
         </el-header>
 
         <el-main>
-          <div>
-            <el-tabs
-              v-model="activeIndex"
-              type="border-card"
-              closable
-              @tab-click="tabClick"
-              @tab-remove="tabRemove"
-            >
-              <el-tab-pane
-                :key="item.menuPath"
-                v-for="(item, index) in openTab"
-                :label="item.menuName"
-                :name="item.menuPath"
-              ></el-tab-pane>
-            </el-tabs>
-          </div>
           <div class="content-wrap">
-            <el-scrollbar :style="{height: (this.fullHeight-120)+'px'}">
+            <el-scrollbar :style="{height: (this.fullHeight-70)+'px'}">
               <router-view />
             </el-scrollbar>
           </div>
@@ -157,6 +147,10 @@ body {
       cursor: pointer;
       font-size: 25px;
     }
+    .breadcrumb-container {
+      padding: 18px;
+      display: inline-block;
+    }
     .right-menu-container {
       float: right;
       height: 100%;
@@ -189,22 +183,8 @@ body {
   .el-main {
     padding: 50px 10px 10px 10px;
     background-color: $mainBackgroundColor;
-    .el-tabs {
-      z-index: 2;
-      position: fixed;
-      right: 9px;
-      left: calc(#{$sideBarWidth} + 9px);
-      transition: left $animateSeconds !important;
-      -moz-transition: left $animateSeconds !important;
-      -webkit-transition: left $animateSeconds !important;
-      -o-transition: left $animateSeconds !important;
-      .el-tabs__content {
-        display: none;
-      }
-    }
 
     .content-wrap {
-      margin-top: 50px;
       background: #fff;
       border: 1px solid #dcdfe6;
       -webkit-box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.12),
@@ -257,25 +237,40 @@ body {
 </style>
 <script>
 import Menu from "@/components/common/Menu";
+import { mapState } from "vuex";
 export default {
   components: { Menu },
   data() {
     return {
       menuData: [
         {
-          menuId: "1",
           menuName: "菜单1",
           menuIcon: "el-icon-user",
           children: [
             {
-              menuId: "2",
               menuName: "菜单11",
               menuIcon: "el-icon-location",
               children: [
                 {
-                  menuId: "3",
-                  menuPath: "/tableTest",
+                  menuPath: "/tableTest?id=1",
                   menuName: "表格",
+                  menuIcon: "el-icon-circle-plus"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          menuName: "菜单2",
+          menuIcon: "el-icon-user",
+          children: [
+            {
+              menuName: "菜单22",
+              menuIcon: "el-icon-location",
+              children: [
+                {
+                  menuPath: "/tableTest",
+                  menuName: "表格2",
                   menuIcon: "el-icon-circle-plus"
                 }
               ]
@@ -285,7 +280,8 @@ export default {
       ],
       isCollapse: false,
       hamburgerIconClass: "el-icon-s-fold",
-      fullHeight: document.documentElement.clientHeight
+      fullHeight: document.documentElement.clientHeight,
+      breadcrumbItems: []
     };
   },
   methods: {
@@ -295,40 +291,15 @@ export default {
         ? (this.hamburgerIconClass = "el-icon-s-unfold")
         : (this.hamburgerIconClass = "el-icon-s-fold");
     },
-    tabClick() {
-      this.$router.push({ path: this.activeIndex });
-    },
-    tabRemove(menuPath) {
-      if (menuPath == "/" || menuPath == "/main") {
-        return;
-      }
-      this.$store.commit("delete_tabs", menuPath);
-      if (this.activeIndex === menuPath) {
-        if (this.openTab && this.openTab.length >= 1) {
-          this.$store.commit(
-            "set_active_index",
-            this.openTab[this.openTab.length - 1].route
-          );
-          this.$router.push({ path: this.activeIndex });
-        } else {
-          this.$router.push({ path: "/main" });
-        }
+    handleMenuSelect(index, indexPath) {
+      this.breadcrumbItems = indexPath;
+      let length = this.breadcrumbItems.length;
+      if (length > 0) {
+        this.breadcrumbItems[length - 1] = this.currentSubMenuName;
       }
     }
   },
   mounted() {
-    if (this.$route.path !== "/" && this.$route.path !== "/main") {
-      this.$store.commit("add_tabs", { menuPath: "/main", menuName: "首页" });
-      this.$store.commit("add_tabs", {
-        menuPath: this.$route.path,
-        menuName: this.$route.name
-      });
-      this.$store.commit("set_active_index", this.$route.path);
-    } else {
-      this.$store.commit("add_tabs", { menuPath: "/main", menuName: "首页" });
-      this.$store.commit("set_active_index", "/main");
-      this.$router.push("/main");
-    }
     const that = this;
     window.onresize = () => {
       return (() => {
@@ -338,39 +309,12 @@ export default {
     };
   },
   computed: {
-    openTab() {
-      return this.$store.state.openTab;
-    },
-    activeIndex: {
-      get() {
-        return this.$store.state.activeIndex;
-      },
-      set(val) {
-        this.$store.commit("set_active_index", val);
-      }
-    },
+    ...mapState(["currentSubMenuName"]),
     hamburgerClass() {
       return { hideSidebar: this.isCollapse };
     }
   },
   watch: {
-    $route(to, from) {
-      let flag = false;
-      for (let item of this.openTab) {
-        if (item.menuPath === to.menuPath) {
-          this.$store.commit("set_active_index", to.path);
-          flag = true;
-          break;
-        }
-      }
-      if (!flag) {
-        this.$store.commit("add_tabs", {
-          menuPath: to.path,
-          menuName: to.name
-        });
-        this.$store.commit("set_active_index", to.path);
-      }
-    },
     fullHeight(val) {
       if (!this.timer) {
         this.fullHeight = val;
