@@ -23,7 +23,12 @@
       <el-container class="main-container">
         <el-header class="fixed-header">
           <div class="hamburger-container">
-            <el-tooltip class="item" effect="dark" :content="hamburgerTips" placement="bottom-start">
+            <el-tooltip
+              class="item"
+              effect="dark"
+              :content="hamburgerTips"
+              placement="bottom-start"
+            >
               <i :class="this.hamburgerIconClass" @click="menuCollapse()"></i>
             </el-tooltip>
           </div>
@@ -271,8 +276,8 @@ export default {
               menuIcon: "el-icon-location",
               children: [
                 {
-                  menuPath: "/tableTest2",
-                  menuName: "表格2",
+                  menuPath: "/crud",
+                  menuName: "增删改查",
                   menuIcon: "el-icon-circle-plus"
                 }
               ]
@@ -281,7 +286,7 @@ export default {
         }
       ],
       isCollapse: false,
-      hamburgerTips: '隐藏菜单',
+      hamburgerTips: "隐藏菜单",
       hamburgerIconClass: "el-icon-s-fold",
       fullHeight: document.documentElement.clientHeight,
       breadcrumbItems: []
@@ -291,8 +296,10 @@ export default {
     menuCollapse() {
       this.isCollapse = !this.isCollapse;
       this.isCollapse
-        ? (this.hamburgerIconClass = "el-icon-s-unfold",this.hamburgerTips = '展开菜单')
-        : (this.hamburgerIconClass = "el-icon-s-fold",this.hamburgerTips = '隐藏菜单');
+        ? ((this.hamburgerIconClass = "el-icon-s-unfold"),
+          (this.hamburgerTips = "显示菜单"))
+        : ((this.hamburgerIconClass = "el-icon-s-fold"),
+          (this.hamburgerTips = "隐藏菜单"));
     },
     handleMenuSelect(index, indexPath) {
       this.breadcrumbItems = indexPath;
@@ -303,6 +310,7 @@ export default {
           this.breadcrumbItems[length - 1] = this.menuMap.get(key);
         }
       }
+      local.set("lastRequestPath", index);
       local.set("breadcrumb", this.breadcrumbItems);
     },
     getMenuMap(map, menuData) {
@@ -326,10 +334,14 @@ export default {
         that.fullHeight = window.fullHeight;
       })();
     };
-    if (this.$route.path == "/") {
-      this.$router.push("/main");
+    let lastRequestPath = local.get("lastRequestPath");
+    let breadcrumb = local.get("breadcrumb");
+    if (!lastRequestPath) {
+      lastRequestPath = "/main";
+      breadcrumb = ["首页"];
     }
-    this.breadcrumbItems = local.get("breadcrumb");
+    this.$router.push(lastRequestPath);
+    this.breadcrumbItems = breadcrumb;
   },
   computed: {
     hamburgerClass() {
