@@ -1,9 +1,9 @@
 <template>
   <div>
-    <el-table :data="tableData">
-      <el-table-column prop="date" label="日期" width="1140"></el-table-column>
-      <el-table-column prop="name" label="姓名" width="1120"></el-table-column>
-      <el-table-column prop="address" label="地址" width="1120"></el-table-column>
+    <el-table :data="tableData" :height="fullHeight">
+      <el-table-column prop="date" label="日期"></el-table-column>
+      <el-table-column prop="name" label="姓名"></el-table-column>
+      <el-table-column prop="address" label="地址"></el-table-column>
     </el-table>
   </div>
 </template>
@@ -18,6 +18,11 @@ export default {
     return {
       tableData: Array(20).fill(item)
     };
+  },
+  computed:{
+    fullHeight(){
+      return this.$store.state.fullHeight;
+    }
   }
 };
 </script>

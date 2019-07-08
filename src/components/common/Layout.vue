@@ -40,11 +40,7 @@
           <div class="right-menu-container">
             <el-dropdown class="info-drop-down">
               <div class="head-img-container">
-                <img
-                  class="head-img"
-                  src="https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif?imageView2/1/w/80/h/80"
-                  alt="头像"
-                />
+                <el-avatar size="medium" src="https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif?imageView2/1/w/80/h/80"></el-avatar>
                 <div class="user-name">
                   王小虎
                   <i class="el-icon-arrow-down el-icon--right"></i>
@@ -165,24 +161,19 @@ body {
         cursor: pointer;
         .head-img-container {
           height: 40px;
-          padding-top: 6px;
-        }
-        .head-img {
-          border-radius: 10px;
-          width: 40px;
-          height: 40px;
+          padding-top: 7px;
         }
         .user-name {
           float: right;
-          padding-top: 12px;
+          padding-top: 8px;
           padding-left: 10px;
         }
       }
       .logout-btn {
         float: right;
-        padding-top: 15px;
+        padding-top: 12px;
         font-size: 20px;
-        padding-left: 20px;
+        padding-left: 15px;
         cursor: pointer;
       }
     }
@@ -357,6 +348,7 @@ export default {
     fullHeight(val) {
       if (!this.timer) {
         this.fullHeight = val;
+        this.$store.commit('setFullHeight',val);
         this.timer = true;
         let that = this;
         setTimeout(function() {
