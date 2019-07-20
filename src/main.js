@@ -5,11 +5,36 @@ import 'font-awesome/css/font-awesome.min.css';
 import App from '@/App.vue';
 import router from '@/router';
 import store from '@/store';
+import moment from 'moment';
 
 Vue.config.productionTip = false
 
 Vue.use(ElementUI);
 
+Vue.prototype.$moment = moment;
+
+Vue.mixin({
+  methods: {
+    commonFormat(timestamp, format = 'YYYY-MM-DD HH:mm:ss') {
+      if (timestamp == undefined || timestamp == null) {
+        return "";
+      }
+      return moment(timestamp).format(format);
+    },
+    formatDateTime(row, column) {
+      return this.commonFormat(row[column.property]);
+    },
+    formatDate(row, column) {
+      return this.commonFormat(row[column.property], "YYYY-MM-DD");
+    }
+  },
+});
+Vue.filter('dateTimeFilter', function (timestamp, format = 'YYYY-MM-DD HH:mm:ss') {
+  if (timestamp == undefined || timestamp == null) {
+    return "";
+  }
+  return moment(timestamp).format(format);
+});
 new Vue({
   el: '#app',
   router,

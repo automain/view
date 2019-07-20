@@ -40,7 +40,10 @@
           <div class="right-menu-container">
             <el-dropdown class="info-drop-down">
               <div class="head-img-container">
-                <el-avatar size="medium" src="https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif?imageView2/1/w/80/h/80"></el-avatar>
+                <el-avatar
+                  size="medium"
+                  src="https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif?imageView2/1/w/80/h/80"
+                ></el-avatar>
                 <div class="user-name">
                   王小虎
                   <i class="el-icon-arrow-down el-icon--right"></i>
@@ -190,6 +193,15 @@ body {
       box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.12), 0 0 6px 0 rgba(0, 0, 0, 0.04);
       .el-scrollbar .el-scrollbar__wrap {
         overflow-x: hidden;
+        .table-expand {
+          label {
+            color: #99a9bf;
+          }
+          .el-form-item {
+            margin-right: 0;
+            margin-bottom: 0;
+          }
+        }
       }
     }
   }
@@ -348,7 +360,7 @@ export default {
     fullHeight(val) {
       if (!this.timer) {
         this.fullHeight = val;
-        this.$store.commit('setFullHeight',val);
+        this.$store.commit("setFullHeight", val);
         this.timer = true;
         let that = this;
         setTimeout(function() {
