@@ -1,18 +1,18 @@
 <template>
   <div>
     <el-card class="box-card">
-      <el-form :inline="true" :model="formInline">
+      <el-form :inline="true" :model="formInline" size="mini">
         <el-form-item>
-          <el-button type="success" size="small" icon="el-icon-plus">添加</el-button>
+          <el-button type="success" icon="el-icon-plus" @click="addFormVisible = true">添加</el-button>
         </el-form-item>
         <el-form-item>
-          <el-button type="warning" size="small" icon="el-icon-delete">删除</el-button>
+          <el-button type="warning"icon="el-icon-delete">删除</el-button>
         </el-form-item>
         <el-form-item label="审批人">
-          <el-input size="small" v-model="formInline.user" placeholder="审批人"></el-input>
+          <el-input v-model="formInline.user" placeholder="审批人"></el-input>
         </el-form-item>
         <el-form-item label="活动区域">
-          <el-select size="small" v-model="formInline.region" placeholder="活动区域">
+          <el-select v-model="formInline.region" placeholder="活动区域">
             <el-option label="区域一" value="shanghai"></el-option>
             <el-option label="区域二" value="beijing"></el-option>
           </el-select>
@@ -21,7 +21,6 @@
           <el-date-picker
             v-model="value1"
             type="datetimerange"
-            size="small"
             start-placeholder="开始日期"
             end-placeholder="结束日期"
             :onPick="selectDate()"
@@ -29,7 +28,7 @@
           ></el-date-picker>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" size="small" icon="el-icon-search" @click="onSubmit">查询</el-button>
+          <el-button type="primary" icon="el-icon-search" @click="onSubmit">查询</el-button>
         </el-form-item>
       </el-form>
     </el-card>
@@ -74,6 +73,30 @@
       layout="->, total, prev, pager, next, jumper, sizes"
       :total="400"
     ></el-pagination>
+    <el-dialog title="收货地址" :visible.sync="addFormVisible" class="add-form-dialog">
+      <el-form :model="form" inline label-width="120px" size="mini">
+        <el-form-item label="活动名称" >
+          <el-input v-model="form.name" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="活动区域">
+          <el-select v-model="form.region" placeholder="请选择活动区域">
+            <el-option label="区域一" value="shanghai"></el-option>
+            <el-option label="区域二" value="beijing"></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="时间">
+          <el-date-picker
+            v-model="value2"
+            type="datetime"
+            placeholder="选择日期时间">
+          </el-date-picker>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="addFormVisible = false">取 消</el-button>
+        <el-button type="primary" @click="addFormVisible = false">确 定</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 <script>
@@ -96,8 +119,20 @@ export default {
         region: ""
       },
       value1: [],
+      value2: "",
       tableData: tables,
-      multipleSelection: []
+      multipleSelection: [],
+      form: {
+          name: '',
+          region: '',
+          date1: '',
+          date2: '',
+          delivery: false,
+          type: [],
+          resource: '',
+          desc: ''
+        },
+        addFormVisible: false,
     };
   },
   methods: {

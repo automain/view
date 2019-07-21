@@ -202,6 +202,9 @@ body {
             margin-bottom: 0;
           }
         }
+        .add-form-dialog .el-input{
+          width: 200px;
+        }
       }
     }
   }
