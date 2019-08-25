@@ -1,11 +1,11 @@
 var local = {
-    set(key, value){
-        localStorage.setItem(key,JSON.stringify(value));
+    set(key, value) {
+        localStorage.setItem(key, JSON.stringify(value));
     },
-    get(key){
+    get(key) {
         return JSON.parse(localStorage.getItem(key));
     },
-    remove(key){
+    remove(key) {
         localStorage.removeItem(key);
     }
 }
