@@ -289,6 +289,17 @@ export default {
               ]
             }
           ]
+        },
+        {
+          menuName: "开发工具",
+          menuIcon: "el-icon-s-cooperation",
+          children: [
+            {
+              menuName: "生成器",
+              menuIcon: "el-icon-s-platform",
+              menuPath: "/dev/generator"
+            }
+          ]
         }
       ],
       isCollapse: false,

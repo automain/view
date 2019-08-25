@@ -6,7 +6,7 @@
           <el-button type="success" icon="el-icon-plus" @click="addFormVisible = true">添加</el-button>
         </el-form-item>
         <el-form-item>
-          <el-button type="warning"icon="el-icon-delete">删除</el-button>
+          <el-button type="warning" icon="el-icon-delete">删除</el-button>
         </el-form-item>
         <el-form-item label="审批人">
           <el-input v-model="formInline.user" placeholder="审批人"></el-input>
@@ -18,27 +18,14 @@
           </el-select>
         </el-form-item>
         <el-form-item label="时间">
-          <el-date-picker
-            v-model="value1"
-            type="datetimerange"
-            start-placeholder="开始日期"
-            end-placeholder="结束日期"
-            :onPick="selectDate()"
-            value-format="timestamp"
-          ></el-date-picker>
+          <el-date-picker v-model="value1" type="datetimerange" start-placeholder="开始日期" end-placeholder="结束日期" :onPick="selectDate()" value-format="timestamp"></el-date-picker>
         </el-form-item>
         <el-form-item>
           <el-button type="primary" icon="el-icon-search" @click="onSubmit">查询</el-button>
         </el-form-item>
       </el-form>
     </el-card>
-    <el-table
-      ref="multipleTable"
-      :data="tableData"
-      tooltip-effect="dark"
-      :height="fullHeight"
-      @selection-change="handleSelectionChange"
-    >
+    <el-table ref="multipleTable" :data="tableData" tooltip-effect="dark" :height="fullHeight" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="42" fixed="left"></el-table-column>
       <el-table-column type="expand">
         <template slot-scope="props">
@@ -65,17 +52,10 @@
         </template>
       </el-table-column>
     </el-table>
-    <el-pagination
-      @size-change="handleSizeChange"
-      @current-change="handleCurrentChange"
-      :page-sizes="[10, 20, 50, 100]"
-      :page-size="10"
-      layout="->, total, prev, pager, next, jumper, sizes"
-      :total="400"
-    ></el-pagination>
+    <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange" :page-sizes="[10, 20, 50, 100]" :page-size="10" layout="->, total, prev, pager, next, jumper, sizes" :total="400"></el-pagination>
     <el-dialog title="收货地址" :visible.sync="addFormVisible" class="add-form-dialog">
       <el-form :model="form" inline label-width="120px" size="mini">
-        <el-form-item label="活动名称" >
+        <el-form-item label="活动名称">
           <el-input v-model="form.name" autocomplete="off"></el-input>
         </el-form-item>
         <el-form-item label="活动区域">
@@ -85,10 +65,7 @@
           </el-select>
         </el-form-item>
         <el-form-item label="时间">
-          <el-date-picker
-            v-model="value2"
-            type="datetime"
-            placeholder="选择日期时间">
+          <el-date-picker v-model="value2" type="datetime" placeholder="选择日期时间">
           </el-date-picker>
         </el-form-item>
       </el-form>
@@ -123,16 +100,16 @@ export default {
       tableData: tables,
       multipleSelection: [],
       form: {
-          name: '',
-          region: '',
-          date1: '',
-          date2: '',
-          delivery: false,
-          type: [],
-          resource: '',
-          desc: ''
-        },
-        addFormVisible: false,
+        name: "",
+        region: "",
+        date1: "",
+        date2: "",
+        delivery: false,
+        type: [],
+        resource: "",
+        desc: ""
+      },
+      addFormVisible: false
     };
   },
   methods: {
