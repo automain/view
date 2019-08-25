@@ -185,6 +185,10 @@
                         }
                         this.columnList = columns;
                         this.columnNameList = columnNames;
+                        this.addAll(true);
+                        this.updateAll(true);
+                        this.detailAll(true);
+                        this.listAll(true);
                     }
                 });
             }
