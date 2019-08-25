@@ -4,12 +4,12 @@
             <el-form :inline="true" :model="generatorVO" size="mini">
                 <el-form-item label="数据库:">
                     <el-select v-model="generatorVO.databaseName" placeholder="请选择数据库" @change="getTables">
-                        <el-option v-for="item in databaseList" :value="item"></el-option>
+                        <el-option v-for="item in databaseList" :key="item" :value="item"></el-option>
                     </el-select>
                 </el-form-item>
                 <el-form-item label="表:">
                     <el-select v-model="generatorVO.tableName" placeholder="请选择表" @change="getColumns">
-                        <el-option v-for="item in tableList" :value="item"></el-option>
+                        <el-option v-for="item in tableList" :key="item" :value="item"></el-option>
                     </el-select>
                 </el-form-item>
                 <el-form-item label="业务前缀:">
@@ -22,7 +22,7 @@
                     <el-button type="primary" icon="el-icon-document-copy" @click="copy('#bean')" id="bean" :data-clipboard-text="bean">复制bean</el-button>
                 </el-form-item>
                 <el-form-item>
-                    <el-button type="success" icon="el-icon-download">生成</el-button>
+                    <el-button type="success" icon="el-icon-download" @click="generate">生成</el-button>
                 </el-form-item>
             </el-form>
         </el-card>
@@ -103,14 +103,22 @@
             };
         },
         methods: {
+            generate() {
+                if (this.generatorVO.prefix === "") {
+                    this.$message.error("请输入业务前缀");
+                } else {
+                    this.$axios.post("/dev/generate", this.generatorVO, {responseType: 'blob'}).then(response => {
+                        this.download(response);
+                    });
+                }
+            },
             addAll(checked) {
                 this.generatorVO.addCheck = checked ? this.columnNameList : [];
                 this.addIndeterminate = false;
             },
             checkAddAll(checked) {
                 this.addAllCheck = this.generatorVO.addCheck.length === this.columnNameList.length;
-                this.addIndeterminate =
-                    !this.addAllCheck && this.generatorVO.addCheck.length > 0;
+                this.addIndeterminate = !this.addAllCheck && this.generatorVO.addCheck.length > 0;
             },
             updateAll(checked) {
                 this.generatorVO.updateCheck = checked ? this.columnNameList : [];
@@ -118,8 +126,7 @@
             },
             checkUpdateAll(checked) {
                 this.updateAllCheck = this.generatorVO.updateCheck.length === this.columnNameList.length;
-                this.updateIndeterminate =
-                    !this.updateAllCheck && this.generatorVO.updateCheck.length > 0;
+                this.updateIndeterminate = !this.updateAllCheck && this.generatorVO.updateCheck.length > 0;
             },
             detailAll(checked) {
                 this.generatorVO.detailCheck = checked ? this.columnNameList : [];
@@ -127,8 +134,7 @@
             },
             checkDetailAll(checked) {
                 this.detailAllCheck = this.generatorVO.detailCheck.length === this.columnNameList.length;
-                this.detailIndeterminate =
-                    !this.detailAllCheck && this.generatorVO.detailCheck.length > 0;
+                this.detailIndeterminate = !this.detailAllCheck && this.generatorVO.detailCheck.length > 0;
             },
             listAll(checked) {
                 this.generatorVO.listCheck = checked ? this.columnNameList : [];
@@ -136,8 +142,7 @@
             },
             checkListAll(checked) {
                 this.listAllCheck = this.generatorVO.listCheck.length === this.columnNameList.length;
-                this.listIndeterminate =
-                    !this.listAllCheck && this.generatorVO.listCheck.length > 0;
+                this.listIndeterminate = !this.listAllCheck && this.generatorVO.listCheck.length > 0;
             },
             copy(id) {
                 if (this.generatorVO.databaseName === "" || this.generatorVO.tableName === "") {

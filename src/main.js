@@ -25,6 +25,19 @@ Vue.prototype.$axios = axios.create({
 
 Vue.mixin({
     methods: {
+        download(response){
+            let contentDisposition = response.headers['content-disposition'];
+            let fileName = contentDisposition ? contentDisposition.split("\"")[1] : "undefined";
+            let blob = new Blob([response.data])
+            let downloadElement = document.createElement('a');
+            let href = window.URL.createObjectURL(blob);
+            downloadElement.href = href;
+            downloadElement.download = fileName;
+            document.body.appendChild(downloadElement);
+            downloadElement.click();
+            document.body.removeChild(downloadElement);
+            window.URL.revokeObjectURL(href);
+        },
         commonFormat(timestamp, format = 'YYYY-MM-DD HH:mm:ss') {
             if (timestamp == undefined || timestamp == null) {
                 return "";
