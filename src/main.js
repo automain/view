@@ -42,7 +42,7 @@ Vue.mixin({
             if (timestamp == undefined || timestamp == null) {
                 return "";
             }
-            return moment(timestamp).format(format);
+            return moment(timestamp * 1000).format(format);
         },
         formatDateTime(row, column) {
             return this.commonFormat(row[column.property]);

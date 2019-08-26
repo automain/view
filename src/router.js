@@ -15,6 +15,7 @@ export default new Router({
                 {path: '/tableTest', name: '表格', component: () => import('@/views/common/TableTest')},
                 {path: '/crud', name: '增删改查', component: () => import('@/views/common/CRUD')},
                 {path: '/dev/generator', name: '生成器', component: () => import('@/views/common/Generator')},
+                {path: '/dev/test', name: '测试页面', component: () => import('@/views/test/Test')},
             ]
         },
 

@@ -309,6 +309,11 @@
                                 menuName: "生成器",
                                 menuIcon: "el-icon-s-platform",
                                 menuPath: "/dev/generator"
+                            },
+                            {
+                                menuName: "测试",
+                                menuIcon: "el-icon-s-flag",
+                                menuPath: "/dev/test"
                             }
                         ]
                     }
