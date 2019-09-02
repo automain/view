@@ -56,7 +56,7 @@ Vue.filter('dateTimeFilter', function (timestamp, format = 'YYYY-MM-DD HH:mm:ss'
     if (timestamp == undefined || timestamp == null) {
         return "";
     }
-    return moment(timestamp).format(format);
+    return moment(timestamp * 1000).format(format);
 });
 new Vue({
     el: '#app',

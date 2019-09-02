@@ -3,7 +3,7 @@
         <el-card class="box-card">
             <el-form :inline="true" :model="testVO" size="mini">
                 <el-form-item>
-                    <el-button type="success" icon="el-icon-plus" @click="addFormVisible = true">添加</el-button>
+                    <el-button type="success" icon="el-icon-plus" @click="handleClear(true)">添加</el-button>
                 </el-form-item>
                 <el-form-item>
                     <el-button type="warning" icon="el-icon-delete">删除</el-button>
@@ -49,7 +49,23 @@
             </el-table-column>
         </el-table>
         <el-pagination @size-change="handleSizeChange" @current-change="handlePageChange" :page-sizes="[10, 20, 50, 100]" :page-size="testVO.size" layout="->, total, prev, pager, next, jumper, sizes" :total="pageBean.total"></el-pagination>
-
+        <el-dialog title="添加/编辑" :visible.sync="addFormVisible" class="add-form-dialog">
+            <el-form :model="test" inline label-width="120px" size="mini">
+                <el-form-item label="金额">
+                    <el-input v-model="test.money" autocomplete="off"></el-input>
+                </el-form-item>
+                <el-form-item label="备注">
+                    <el-input type="textarea" v-model="test.remark"></el-input>
+                </el-form-item>
+                <el-form-item label="测试名称">
+                    <el-input v-model="test.testName" autocomplete="off"></el-input>
+                </el-form-item>
+            </el-form>
+            <div slot="footer" class="dialog-footer">
+                <el-button @click="handleClear(false)">取消</el-button>
+                <el-button type="primary" @click="handleAddOrUpdate">确定</el-button>
+            </div>
+        </el-dialog>
     </div>
 </template>
 
@@ -74,6 +90,12 @@
                     page: 1,
                     total: 0,
                     data: [],
+                },
+                test: {
+                    gid: null,
+                    money: null,
+                    remark: null,
+                    testName: null,
                 },
             }
         },
@@ -103,10 +125,31 @@
                 this.testVO.updateTimeEnd = this.updateTimeRange[1] / 1000;
             },
             handleUpdate(row) {
-
+                this.test.gid = row.gid;
+                this.test.money = row.money;
+                this.test.remark = row.remark;
+                this.test.testName = row.testName;
+                this.addFormVisible = true;
             },
             selectToDelete(val) {
                 this.testVO.gidList = val;
+            },
+            handleClear(visible) {
+                this.test.gid = null;
+                this.test.money = null;
+                this.test.remark = null;
+                this.test.testName = null;
+                this.addFormVisible = visible;
+            },
+            handleAddOrUpdate() {
+                this.$axios.post("/test/addOrUpdate", this.test).then(response => {
+                    let data = response.data;
+                    if (data.status === 0) {
+                        this.$message.success("操作成功");
+                        this.handleClear(false);
+                        this.handleSearch();
+                    }
+                });
             }
         },
         mounted() {
@@ -119,7 +162,3 @@
         }
     }
 </script>
-
-<style scoped>
-
-</style>
