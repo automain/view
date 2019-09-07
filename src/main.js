@@ -28,7 +28,7 @@ Vue.mixin({
         download(response){
             let contentDisposition = response.headers['content-disposition'];
             let fileName = contentDisposition ? contentDisposition.split("\"")[1] : "undefined";
-            let blob = new Blob([response.data])
+            let blob = new Blob([response.data]);
             let downloadElement = document.createElement('a');
             let href = window.URL.createObjectURL(blob);
             downloadElement.href = href;
@@ -39,7 +39,7 @@ Vue.mixin({
             window.URL.revokeObjectURL(href);
         },
         commonFormat(timestamp, format = 'YYYY-MM-DD HH:mm:ss') {
-            if (timestamp == undefined || timestamp == null) {
+            if (timestamp === undefined || timestamp == null) {
                 return "";
             }
             return moment(timestamp * 1000).format(format);
@@ -53,7 +53,7 @@ Vue.mixin({
     },
 });
 Vue.filter('dateTimeFilter', function (timestamp, format = 'YYYY-MM-DD HH:mm:ss') {
-    if (timestamp == undefined || timestamp == null) {
+    if (timestamp === undefined || timestamp == null) {
         return "";
     }
     return moment(timestamp * 1000).format(format);
@@ -65,4 +65,4 @@ new Vue({
     render: function (h) {
         return h(App)
     }
-})
+});
