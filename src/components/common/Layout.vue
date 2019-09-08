@@ -260,7 +260,6 @@
 </style>
 <script>
     import Menu from "@/components/common/Menu";
-    import local from "@/local";
 
     export default {
         components: {Menu},
@@ -278,23 +277,6 @@
                                     {
                                         menuPath: "/tableTest",
                                         menuName: "表格",
-                                        menuIcon: "el-icon-circle-plus"
-                                    }
-                                ]
-                            }
-                        ]
-                    },
-                    {
-                        menuName: "菜单2",
-                        menuIcon: "el-icon-user",
-                        children: [
-                            {
-                                menuName: "菜单22",
-                                menuIcon: "el-icon-location",
-                                children: [
-                                    {
-                                        menuPath: "/crud",
-                                        menuName: "增删改查",
                                         menuIcon: "el-icon-circle-plus"
                                     }
                                 ]
@@ -343,38 +325,38 @@
                         this.breadcrumbItems[length - 1] = this.menuMap.get(key);
                     }
                 }
-                local.set("lastRequestPath", index);
-                local.set("breadcrumb", this.breadcrumbItems);
+                this.$local.set("lastRequestPath", index);
+                this.$local.set("breadcrumb", this.breadcrumbItems);
             },
             getMenuMap(map, menuData) {
                 for (let index in menuData) {
-                    let menu = menuData[index];
-                    if (menu.menuPath && !menu.children) {
-                        map.set(menu.menuPath, menu.menuName);
-                    }
-                    if (menu.children) {
-                        this.getMenuMap(map, menu.children);
+                    if (menuData.hasOwnProperty(index)) {
+                        let menu = menuData[index];
+                        if (menu.menuPath && !menu.children) {
+                            map.set(menu.menuPath, menu.menuName);
+                        }
+                        if (menu.children) {
+                            this.getMenuMap(map, menu.children);
+                        }
                     }
                 }
                 return map;
             }
         },
         mounted() {
-            const that = this;
             window.onresize = () => {
-                return (() => {
-                    window.fullHeight = document.documentElement.clientHeight;
-                    that.fullHeight = window.fullHeight;
-                })();
+                window.fullHeight = document.documentElement.clientHeight;
+                this.fullHeight = window.fullHeight;
             };
-            let lastRequestPath = local.get("lastRequestPath");
-            let breadcrumb = local.get("breadcrumb");
+            let lastRequestPath = this.$local.get("lastRequestPath");
+            let breadcrumb = this.$local.get("breadcrumb");
             if (!lastRequestPath) {
                 lastRequestPath = "/main";
                 breadcrumb = ["首页"];
             }
             this.$router.push(lastRequestPath);
             this.breadcrumbItems = breadcrumb;
+            this.$store.dispatch("initDictionaryMap", this.$axios);
         },
         computed: {
             hamburgerClass() {

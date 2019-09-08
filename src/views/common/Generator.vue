@@ -160,7 +160,7 @@
                 }
             },
             getTables() {
-                this.$axios.post("/dev/table/list", this.generatorVO).then(response => {
+                this.$axios.post("/dev/tableList", this.generatorVO).then(response => {
                     let data = response.data;
                     if (data.status === 0) {
                         this.tableList = data.data;
@@ -168,7 +168,7 @@
                 });
             },
             getColumns() {
-                this.$axios.post("/dev/column/list", this.generatorVO).then(response => {
+                this.$axios.post("/dev/columnList", this.generatorVO).then(response => {
                     let data = response.data;
                     if (data.status === 0) {
                         this.serviceContainer = data.data.serviceContainer;
@@ -194,7 +194,7 @@
             }
         },
         mounted() {
-            this.$axios.post("/dev/database/list").then(response => {
+            this.$axios.post("/dev/databaseList").then(response => {
                 let data = response.data;
                 if (data.status === 0) {
                     this.databaseList = data.data;

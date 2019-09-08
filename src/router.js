@@ -13,7 +13,6 @@ export default new Router({
             children: [
                 {path: '/main', name: '首页', component: () => import('@/views/common/Main')},
                 {path: '/tableTest', name: '表格', component: () => import('@/views/common/TableTest')},
-                {path: '/crud', name: '增删改查', component: () => import('@/views/common/CRUD')},
                 {path: '/dev/generator', name: '生成器', component: () => import('@/views/common/Generator')},
                 {path: '/dev/test', name: '测试页面', component: () => import('@/views/test/Test')},
             ]

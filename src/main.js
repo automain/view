@@ -6,12 +6,14 @@ import 'font-awesome/css/font-awesome.min.css';
 import App from '@/App.vue';
 import router from '@/router';
 import store from '@/store';
+import local from "@/local";
 import moment from 'moment';
 
 Vue.config.productionTip = false;
 
 Vue.use(ElementUI);
 
+Vue.prototype.$local = local;
 Vue.prototype.$moment = moment;
 Vue.prototype.$axios = axios.create({
     baseURL: process.env.NODE_ENV === 'development' ? 'http://localhost:8081/web' : '/',
@@ -25,7 +27,7 @@ Vue.prototype.$axios = axios.create({
 
 Vue.mixin({
     methods: {
-        download(response){
+        download(response) {
             let contentDisposition = response.headers['content-disposition'];
             let fileName = contentDisposition ? contentDisposition.split("\"")[1] : "undefined";
             let blob = new Blob([response.data]);
@@ -38,25 +40,30 @@ Vue.mixin({
             document.body.removeChild(downloadElement);
             window.URL.revokeObjectURL(href);
         },
-        commonFormat(timestamp, format = 'YYYY-MM-DD HH:mm:ss') {
+        commonDateFormatter(timestamp, format = 'YYYY-MM-DD HH:mm:ss') {
             if (timestamp === undefined || timestamp == null) {
                 return "";
             }
             return moment(timestamp * 1000).format(format);
         },
-        formatDateTime(row, column) {
-            return this.commonFormat(row[column.property]);
+        dateTimeFormatter(row, column) {
+            return this.commonDateFormatter(row[column.property]);
         },
-        formatDate(row, column) {
-            return this.commonFormat(row[column.property], "YYYY-MM-DD");
+        dateFormatter(row, column) {
+            return this.commonDateFormatter(row[column.property], "YYYY-MM-DD");
         }
-    },
+    }
 });
 Vue.filter('dateTimeFilter', function (timestamp, format = 'YYYY-MM-DD HH:mm:ss') {
     if (timestamp === undefined || timestamp == null) {
         return "";
     }
     return moment(timestamp * 1000).format(format);
+});
+Vue.filter('dictionaryFilter', function (key, tableName, columnName) {
+    let dictionaryMap = store.state.dictionaryMap;
+    let dictionary = dictionaryMap ? dictionaryMap.get(tableName + "_" + columnName) : "";
+    return dictionary ? dictionary.get(key) : "";
 });
 new Vue({
     el: '#app',

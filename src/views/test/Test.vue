@@ -33,12 +33,20 @@
                         <el-form-item label="测试名称">
                             <span>{{ props.row.testName }}</span>
                         </el-form-item>
+                        <el-form-item label="测试字典">
+                            <span>{{ props.row.testDictionary | dictionaryFilter('test', 'test_dictionary')}}</span>
+                        </el-form-item>
                     </el-form>
                 </template>
             </el-table-column>
-            <el-table-column prop="createTime" label="创建时间" width="160" :formatter="formatDateTime"></el-table-column>
-            <el-table-column prop="updateTime" label="更新时间" width="160" :formatter="formatDateTime"></el-table-column>
+            <el-table-column prop="createTime" label="创建时间" width="160" :formatter="dateTimeFormatter"></el-table-column>
+            <el-table-column prop="updateTime" label="更新时间" width="160" :formatter="dateTimeFormatter"></el-table-column>
             <el-table-column prop="testName" label="测试名称" show-overflow-tooltip></el-table-column>
+            <el-table-column prop="testDictionary" label="测试字典">
+                <template slot-scope="scope">
+                    {{scope.row.testDictionary | dictionaryFilter('test', 'test_dictionary')}}
+                </template>
+            </el-table-column>
             <el-table-column fixed="right" label="操作" width="100">
                 <template slot-scope="scope">
                     <el-button @click="handleUpdate(scope.row)" type="text" size="small">编辑</el-button>
@@ -97,6 +105,7 @@
                     remark: null,
                     testName: null,
                     createTime: null,
+                    testDictionary: null,
                 },
             }
         },
@@ -110,7 +119,7 @@
                 this.handleSearch();
             },
             handleSearch() {
-                this.$axios.post("/test/list", this.testVO).then(response => {
+                this.$axios.post("/testList", this.testVO).then(response => {
                     let data = response.data;
                     if (data.status === 0) {
                         this.pageBean = data.data;
@@ -152,7 +161,7 @@
                 this.addFormVisible = visible;
             },
             handleAddOrUpdate() {
-                this.$axios.post("/test/addOrUpdate", this.test).then(response => {
+                this.$axios.post("/testAddOrUpdate", this.test).then(response => {
                     let data = response.data;
                     if (data.status === 0) {
                         this.$message.success("操作成功");
@@ -166,7 +175,7 @@
             handleDelete() {
                 if (this.testVO.gidList.length > 0) {
                     this.$confirm("确定删除选中的数据?", "提示", {type: "warning"}).then(() => {
-                        this.$axios.post("/test/delete", this.testVO).then(response => {
+                        this.$axios.post("/testDelete", this.testVO).then(response => {
                             let data = response.data;
                             if (data.status === 0) {
                                 this.$message.success("操作成功");
