@@ -356,7 +356,24 @@
             }
             this.$router.push(lastRequestPath);
             this.breadcrumbItems = breadcrumb;
-            this.$store.dispatch("initDictionaryMap", this.$axios);
+            this.$axios.post("/dictionaryAll").then(response => {
+                let data = response.data;
+                if (data.status === 0) {
+                    let dictionaryList = data.data;
+                    let dictionaryMap = new Map();
+                    for (let i = 0, size = dictionaryList.length; i < size; i++) {
+                        let dictionary = dictionaryList[i];
+                        let key = dictionary.tableName + "_" + dictionary.columnName;
+                        let dMap = dictionaryMap.get(key);
+                        if (!dMap) {
+                            dMap = new Map();
+                        }
+                        dMap.set(dictionary.dictionaryKey, dictionary.dictionaryValue);
+                        dictionaryMap.set(key, dMap);
+                    }
+                    this.$local.setMap("dictionaryMap", dictionaryMap);
+                }
+            });
         },
         computed: {
             hamburgerClass() {

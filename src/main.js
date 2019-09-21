@@ -51,6 +51,17 @@ Vue.mixin({
         },
         dateFormatter(row, column) {
             return this.commonDateFormatter(row[column.property], "YYYY-MM-DD");
+        },
+        getDictionaryMap(key,text) {
+            let map = local.getMap("dictionaryMap").get(key);
+            let select = [];
+            if (text) {
+                select.push({key:"",value:text});
+            }
+            map.forEach(function(v,k,o){
+                select.push({key: k,value:v});
+            });
+            return select;
         }
     }
 });
@@ -60,9 +71,8 @@ Vue.filter('dateTimeFilter', function (timestamp, format = 'YYYY-MM-DD HH:mm:ss'
     }
     return moment(timestamp * 1000).format(format);
 });
-Vue.filter('dictionaryFilter', function (key, tableName, columnName) {
-    let dictionaryMap = store.state.dictionaryMap;
-    let dictionary = dictionaryMap ? dictionaryMap.get(tableName + "_" + columnName) : "";
+Vue.filter('dictionaryFilter', function (key, tableColumnKey) {
+    let dictionary = local.getMap("dictionaryMap").get(tableColumnKey);
     return dictionary ? dictionary.get(key) : "";
 });
 new Vue({

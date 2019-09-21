@@ -34,7 +34,7 @@
                             <span>{{ props.row.testName }}</span>
                         </el-form-item>
                         <el-form-item label="测试字典">
-                            <span>{{ props.row.testDictionary | dictionaryFilter('test', 'test_dictionary')}}</span>
+                            <span>{{ props.row.testDictionary | dictionaryFilter(testDictionaryKey)}}</span>
                         </el-form-item>
                     </el-form>
                 </template>
@@ -44,7 +44,7 @@
             <el-table-column prop="testName" label="测试名称" show-overflow-tooltip></el-table-column>
             <el-table-column prop="testDictionary" label="测试字典">
                 <template slot-scope="scope">
-                    {{scope.row.testDictionary | dictionaryFilter('test', 'test_dictionary')}}
+                    {{scope.row.testDictionary | dictionaryFilter(testDictionaryKey)}}
                 </template>
             </el-table-column>
             <el-table-column fixed="right" label="操作" width="100">
@@ -64,6 +64,11 @@
                 </el-form-item>
                 <el-form-item label="测试名称">
                     <el-input v-model="test.testName" autocomplete="off"></el-input>
+                </el-form-item>
+                <el-form-item label="测试字典">
+                    <el-select v-model="test.testDictionary" placeholder="请选择">
+                        <el-option v-for="item in testDictionaryMap" :key="item.key" :label="item.value" :value="item.key"></el-option>
+                    </el-select>
                 </el-form-item>
                 <el-form-item label="创建时间">
                     <el-date-picker v-model="createTimePicker" type="datetime" placeholder="请选择创建时间" value-format="timestamp" @change="function(val){test.createTime = val / 1000}"></el-date-picker>
@@ -107,6 +112,8 @@
                     createTime: null,
                     testDictionary: null,
                 },
+                testDictionaryKey: "test_test_dictionary",
+                testDictionaryMap: this.getDictionaryMap("test_test_dictionary"),
             }
         },
         methods: {
