@@ -149,11 +149,14 @@
             },
             handleSetProperties(row) {
                 this.test.gid = row.gid;
-                this.test.money = row.money;
-                this.test.remark = row.remark;
-                this.test.testName = row.testName;
-                this.test.createTime = row.createTime;
-                this.test.testDictionary = row.testDictionary;
+                this.$axios.post("/testDetail", this.test).then(response => {
+                    let data = response.data;
+                    if (data.status === 0) {
+                        this.test = data.data;
+                    } else {
+                        this.$message.error("操作失败");
+                    }
+                });
             },
             handleUpdate(row) {
                 this.handleSetProperties(row);
