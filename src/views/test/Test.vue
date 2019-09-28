@@ -19,12 +19,12 @@
                 </el-form-item>
             </el-form>
         </el-card>
-        <el-table ref="multipleTable" :data="pageBean.data" tooltip-effect="dark" :height="fullHeight" @selection-change="selectToDelete" @sort-change="handleSort">
+        <el-table ref="multipleTable" :data="pageBean.data" tooltip-effect="dark" :height="fullHeight" @selection-change="selectToDelete" @sort-change="handleSort" @filter-change="handleFilterChange">
             <el-table-column type="selection" width="42" fixed="left"></el-table-column>
             <el-table-column prop="createTime" label="创建时间" width="160" :formatter="dateTimeFormatter" sortable="custom"></el-table-column>
             <el-table-column prop="updateTime" label="更新时间" width="160" :formatter="dateTimeFormatter"></el-table-column>
             <el-table-column prop="testName" label="测试名称" show-overflow-tooltip></el-table-column>
-            <el-table-column prop="testDictionary" label="测试字典">
+            <el-table-column prop="testDictionary" label="测试字典" column-key="testDictionary" :filters="testDictionaryMap">
                 <template slot-scope="scope">
                     {{scope.row.testDictionary | dictionaryFilter(testDictionaryKey)}}
                 </template>
@@ -50,7 +50,7 @@
                 </el-form-item>
                 <el-form-item label="测试字典:">
                     <el-select v-model="test.testDictionary" placeholder="请选择">
-                        <el-option v-for="item in testDictionaryMap" :key="item.key" :label="item.value" :value="item.key"></el-option>
+                        <el-option v-for="item in testDictionaryMap" :key="item.value" :label="item.text" :value="item.value"></el-option>
                     </el-select>
                 </el-form-item>
                 <el-form-item label="创建时间:">
@@ -103,6 +103,7 @@
                     testName: null,
                     sortLabel: null,
                     sortOrder: null,
+                    testDictionaryList: []
                 },
                 pageBean: {
                     page: 1,
@@ -221,6 +222,10 @@
                         break;
                 }
                 this.testVO.sortOrder = data.order ? data.order.replace("ending", "") : null;
+                this.handleSearch();
+            },
+            handleFilterChange(data){
+                this.testVO.testDictionaryList = data.testDictionary;
                 this.handleSearch();
             }
         },

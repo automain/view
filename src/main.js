@@ -56,10 +56,10 @@ Vue.mixin({
             let map = local.getMap("dictionaryMap").get(key);
             let select = [];
             if (text) {
-                select.push({key:"",value:text});
+                select.push({value:"",text:text});
             }
             map.forEach(function(v,k,o){
-                select.push({key: k,value:v});
+                select.push({value: k,text:v});
             });
             return select;
         }
