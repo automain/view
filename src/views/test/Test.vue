@@ -95,14 +95,14 @@
                 testVO: {
                     page: 1,
                     size: 10,
+                    sortLabel: null,
+                    sortOrder: null,
                     gidList: [],
                     createTime: null,
                     createTimeEnd: null,
                     updateTime: null,
                     updateTimeEnd: null,
                     testName: null,
-                    sortLabel: null,
-                    sortOrder: null,
                     testDictionaryList: []
                 },
                 pageBean: {
@@ -224,7 +224,7 @@
                 this.testVO.sortOrder = data.order ? data.order.replace("ending", "") : null;
                 this.handleSearch();
             },
-            handleFilterChange(data){
+            handleFilterChange(data) {
                 this.testVO.testDictionaryList = data.testDictionary;
                 this.handleSearch();
             }

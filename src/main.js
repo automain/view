@@ -58,8 +58,8 @@ Vue.mixin({
             if (text) {
                 select.push({value:"",text:text});
             }
-            map.forEach(function(v,k,o){
-                select.push({value: k,text:v});
+            map.forEach(function(t,v,o){
+                select.push({value: v,text:t});
             });
             return select;
         }

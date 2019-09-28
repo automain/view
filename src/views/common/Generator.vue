@@ -61,11 +61,6 @@
                     <el-checkbox v-model="generatorVO.listCheck" :label="scope.row.columnName" @change="checkListAll" :checked="true">列表</el-checkbox>
                 </template>
             </el-table-column>
-            <el-table-column label="搜索列" width="100">
-                <template slot-scope="scope">
-                    <el-checkbox v-model="generatorVO.searchCheck" :label="scope.row.columnName">搜索</el-checkbox>
-                </template>
-            </el-table-column>
             <el-table-column label="排序列" width="100">
                 <template slot-scope="scope">
                     <el-checkbox v-model="generatorVO.sortCheck" :label="scope.row.columnName">排序</el-checkbox>
@@ -103,7 +98,6 @@
                     updateCheck: [],
                     detailCheck: [],
                     listCheck: [],
-                    searchCheck: [],
                     sortCheck: []
                 }
             };
