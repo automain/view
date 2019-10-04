@@ -34,7 +34,7 @@
                     <el-checkbox v-model="addAllCheck" @change="addAll" :indeterminate="addIndeterminate">添加列</el-checkbox>
                 </template>
                 <template slot-scope="scope">
-                    <el-checkbox v-model="generatorVO.addCheck" :label="scope.row.columnName" @change="checkAddAll" :checked="true">添加</el-checkbox>
+                    <el-checkbox v-model="generatorVO.addCheck" :label="scope.row.columnName" @change="checkAddAll" :checked="false">添加</el-checkbox>
                 </template>
             </el-table-column>
             <el-table-column width="100">
@@ -42,7 +42,7 @@
                     <el-checkbox v-model="updateAllCheck" @change="updateAll" :indeterminate="updateIndeterminate">编辑列</el-checkbox>
                 </template>
                 <template slot-scope="scope">
-                    <el-checkbox v-model="generatorVO.updateCheck" :label="scope.row.columnName" @change="checkUpdateAll" :checked="true">编辑</el-checkbox>
+                    <el-checkbox v-model="generatorVO.updateCheck" :label="scope.row.columnName" @change="checkUpdateAll" :checked="false">编辑</el-checkbox>
                 </template>
             </el-table-column>
             <el-table-column width="100">
@@ -50,7 +50,7 @@
                     <el-checkbox v-model="detailAllCheck" @change="detailAll" :indeterminate="detailIndeterminate">详情列</el-checkbox>
                 </template>
                 <template slot-scope="scope">
-                    <el-checkbox v-model="generatorVO.detailCheck" :label="scope.row.columnName" @change="checkDetailAll" :checked="true">详情</el-checkbox>
+                    <el-checkbox v-model="generatorVO.detailCheck" :label="scope.row.columnName" @change="checkDetailAll" :checked="false">详情</el-checkbox>
                 </template>
             </el-table-column>
             <el-table-column width="100">
@@ -58,7 +58,7 @@
                     <el-checkbox v-model="listAllCheck" @change="listAll" :indeterminate="listIndeterminate">列表列</el-checkbox>
                 </template>
                 <template slot-scope="scope">
-                    <el-checkbox v-model="generatorVO.listCheck" :label="scope.row.columnName" @change="checkListAll" :checked="true">列表</el-checkbox>
+                    <el-checkbox v-model="generatorVO.listCheck" :label="scope.row.columnName" @change="checkListAll" :checked="false">列表</el-checkbox>
                 </template>
             </el-table-column>
             <el-table-column label="排序列" width="100">
@@ -76,13 +76,13 @@
     export default {
         data() {
             return {
-                addAllCheck: true,
+                addAllCheck: false,
                 addIndeterminate: false,
-                updateAllCheck: true,
+                updateAllCheck: false,
                 updateIndeterminate: false,
-                detailAllCheck: true,
+                detailAllCheck: false,
                 detailIndeterminate: false,
-                listAllCheck: true,
+                listAllCheck: false,
                 listIndeterminate: false,
                 databaseList: [],
                 tableList: [],
@@ -185,10 +185,6 @@
                         }
                         this.columnList = columns;
                         this.columnNameList = columnNames;
-                        this.addAll(true);
-                        this.updateAll(true);
-                        this.detailAll(true);
-                        this.listAll(true);
                     }
                 });
             }

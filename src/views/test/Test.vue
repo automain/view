@@ -3,7 +3,7 @@
         <el-card class="box-card">
             <el-form :inline="true" :model="testVO" size="mini">
                 <el-form-item>
-                    <el-button type="success" icon="el-icon-plus" @click="handleClear(true)">添加</el-button>
+                    <el-button type="success" icon="el-icon-plus" @click="handleAddShow">添加</el-button>
                 </el-form-item>
                 <el-form-item>
                     <el-button type="warning" icon="el-icon-delete" @click="handleDelete">删除</el-button>
@@ -23,7 +23,8 @@
             <el-table-column type="selection" width="42" fixed="left"></el-table-column>
             <el-table-column prop="createTime" label="创建时间" width="160" :formatter="dateTimeFormatter" sortable="custom"></el-table-column>
             <el-table-column prop="updateTime" label="更新时间" width="160" :formatter="dateTimeFormatter"></el-table-column>
-            <el-table-column prop="testName" label="测试名称" show-overflow-tooltip></el-table-column>
+            <el-table-column prop="remark" label="备注" show-overflow-tooltip></el-table-column>
+            <el-table-column prop="testName" label="测试名称"></el-table-column>
             <el-table-column prop="testDictionary" label="测试字典" column-key="testDictionary" :filters="testDictionaryMap">
                 <template slot-scope="scope">
                     {{scope.row.testDictionary | dictionaryFilter(testDictionaryKey)}}
@@ -31,13 +32,13 @@
             </el-table-column>
             <el-table-column fixed="right" label="操作" width="100">
                 <template slot-scope="scope">
-                    <el-button @click="handleUpdate(scope.row)" type="text" size="small">编辑</el-button>
+                    <el-button @click="handleUpdateShow(scope.row)" type="text" size="small">编辑</el-button>
                     <el-button @click="handleDetail(scope.row)" type="text" size="small">详情</el-button>
                 </template>
             </el-table-column>
         </el-table>
         <el-pagination @size-change="handleSizeChange" @current-change="handlePageChange" :page-sizes="[10, 20, 50, 100]" :page-size="testVO.size" layout="->, total, prev, pager, next, jumper, sizes" :total="pageBean.total"></el-pagination>
-        <el-dialog title="添加/编辑" :visible.sync="addFormVisible" class="add-form-dialog">
+        <el-dialog title="添加" :visible.sync="addVisible" class="add-update-dialog">
             <el-form :model="test" inline label-width="120px" size="mini">
                 <el-form-item label="金额:">
                     <el-input v-model="test.money" autocomplete="off"></el-input>
@@ -58,8 +59,33 @@
                 </el-form-item>
             </el-form>
             <div slot="footer" class="dialog-footer">
-                <el-button @click="handleClear(false)">取消</el-button>
-                <el-button type="primary" @click="handleAddOrUpdate">确定</el-button>
+                <el-button @click="handleClear">取消</el-button>
+                <el-button type="primary" @click="handleAdd">确定</el-button>
+            </div>
+        </el-dialog>
+        <el-dialog title="编辑" :visible.sync="updateVisible" class="add-update-dialog">
+            <el-form :model="test" inline label-width="120px" size="mini">
+                <el-form-item label="金额:">
+                    <el-input v-model="test.money" autocomplete="off"></el-input>
+                </el-form-item>
+                <el-form-item label="备注:">
+                    <el-input type="textarea" v-model="test.remark"></el-input>
+                </el-form-item>
+                <el-form-item label="测试名称:">
+                    <el-input v-model="test.testName" autocomplete="off"></el-input>
+                </el-form-item>
+                <el-form-item label="测试字典:">
+                    <el-select v-model="test.testDictionary" placeholder="请选择">
+                        <el-option v-for="item in testDictionaryMap" :key="item.value" :label="item.text" :value="item.value"></el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="创建时间:">
+                    <el-date-picker v-model="createTimePicker" type="datetime" placeholder="请选择创建时间" value-format="timestamp" @change="function(val){test.createTime = val / 1000}"></el-date-picker>
+                </el-form-item>
+            </el-form>
+            <div slot="footer" class="dialog-footer">
+                <el-button @click="handleClear">取消</el-button>
+                <el-button type="primary" @click="handleUpdate">确定</el-button>
             </div>
         </el-dialog>
         <el-dialog title="详情" :visible.sync="detailFormVisible">
@@ -88,7 +114,9 @@
     export default {
         data() {
             return {
-                addFormVisible: false,
+                addUpdateTile: "添加",
+                addVisible: false,
+                updateVisible: false,
                 detailFormVisible: false,
                 createTimeRange: [],
                 createTimePicker: null,
@@ -148,6 +176,19 @@
                     this.testVO.createTimeEnd = null;
                 }
             },
+            handleSort(data) {
+                switch (data.prop) {
+                    case "createTime":
+                        this.testVO.sortLabel = "create_time";
+                        break;
+                }
+                this.testVO.sortOrder = data.order ? data.order.replace("ending", "") : null;
+                this.handleSearch();
+            },
+            handleFilterChange(data) {
+                this.testVO.testDictionaryList = data.testDictionary;
+                this.handleSearch();
+            },
             handleSetProperties(row) {
                 this.test.gid = row.gid;
                 this.$axios.post("/testDetail", this.test).then(response => {
@@ -159,14 +200,44 @@
                     }
                 });
             },
-            handleUpdate(row) {
+            handleUpdateShow(row) {
                 this.handleSetProperties(row);
                 this.createTimePicker = row.createTime * 1000;
-                this.addFormVisible = true;
+                this.updateVisible = true;
             },
             handleDetail(row) {
                 this.handleSetProperties(row);
                 this.detailFormVisible = true;
+            },
+            handleAddShow() {
+                this.handleClear();
+                this.createTimePicker = null;
+                this.addVisible = true;
+            },
+            handleClear() {
+                for (let key in this.test) {
+                    if (this.test.hasOwnProperty(key)) {
+                        this.test[key] = null;
+                    }
+                }
+            },
+            handleAdd() {
+                this.handleAddUpdate("/testAdd");
+            },
+            handleUpdate() {
+                this.handleAddUpdate("/testUpdate");
+            },
+            handleAddUpdate(uri) {
+                this.$axios.post(uri, this.test).then(response => {
+                    let data = response.data;
+                    if (data.status === 0) {
+                        this.$message.success("操作成功");
+                        this.handleClear();
+                        this.handleSearch();
+                    } else {
+                        this.$message.error("操作失败");
+                    }
+                });
             },
             selectToDelete(val) {
                 let gidList = [];
@@ -174,27 +245,6 @@
                     gidList.push(val[i].gid);
                 }
                 this.testVO.gidList = gidList;
-            },
-            handleClear(visible) {
-                for (let key in this.test) {
-                    if (this.test.hasOwnProperty(key)) {
-                        this.test[key] = null;
-                    }
-                }
-                this.createTimePicker = null;
-                this.addFormVisible = visible;
-            },
-            handleAddOrUpdate() {
-                this.$axios.post("/testAddOrUpdate", this.test).then(response => {
-                    let data = response.data;
-                    if (data.status === 0) {
-                        this.$message.success("操作成功");
-                        this.handleClear(false);
-                        this.handleSearch();
-                    } else {
-                        this.$message.error("操作失败");
-                    }
-                });
             },
             handleDelete() {
                 if (this.testVO.gidList.length > 0) {
@@ -214,19 +264,6 @@
                 } else {
                     this.$message.warning("请选择要删除的数据");
                 }
-            },
-            handleSort(data) {
-                switch (data.prop) {
-                    case "createTime":
-                        this.testVO.sortLabel = "create_time";
-                        break;
-                }
-                this.testVO.sortOrder = data.order ? data.order.replace("ending", "") : null;
-                this.handleSearch();
-            },
-            handleFilterChange(data) {
-                this.testVO.testDictionaryList = data.testDictionary;
-                this.handleSearch();
             }
         },
         mounted() {

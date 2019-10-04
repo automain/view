@@ -206,7 +206,7 @@
                         }
                     }
 
-                    .add-form-dialog .el-input {
+                    .add-update-dialog .el-input--mini {
                         width: 200px;
                     }
                 }
