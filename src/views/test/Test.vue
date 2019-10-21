@@ -59,8 +59,8 @@
                 </el-form-item>
             </el-form>
             <div slot="footer" class="dialog-footer">
-                <el-button @click="handleClear">取消</el-button>
-                <el-button type="primary" @click="handleAdd">确定</el-button>
+                <el-button @click="addVisible = false">取消</el-button>
+                <el-button type="primary" @click="handleAddUpdate('/testAdd')">确定</el-button>
             </div>
         </el-dialog>
         <el-dialog title="编辑" :visible.sync="updateVisible" class="add-update-dialog">
@@ -84,8 +84,8 @@
                 </el-form-item>
             </el-form>
             <div slot="footer" class="dialog-footer">
-                <el-button @click="handleClear">取消</el-button>
-                <el-button type="primary" @click="handleUpdate">确定</el-button>
+                <el-button @click="updateVisible = false">取消</el-button>
+                <el-button type="primary" @click="handleAddUpdate('/testUpdate')">确定</el-button>
             </div>
         </el-dialog>
         <el-dialog title="详情" :visible.sync="detailFormVisible">
@@ -221,12 +221,6 @@
                     }
                 }
             },
-            handleAdd() {
-                this.handleAddUpdate("/testAdd");
-            },
-            handleUpdate() {
-                this.handleAddUpdate("/testUpdate");
-            },
             handleAddUpdate(uri) {
                 this.$axios.post(uri, this.test).then(response => {
                     let data = response.data;
@@ -234,6 +228,8 @@
                         this.$message.success("操作成功");
                         this.handleClear();
                         this.handleSearch();
+                        this.addVisible = false;
+                        this.updateVisible = false;
                     } else {
                         this.$message.error("操作失败");
                     }
