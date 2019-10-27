@@ -50,7 +50,7 @@
                     <el-input v-model="test.testName" autocomplete="off"></el-input>
                 </el-form-item>
                 <el-form-item label="测试字典:">
-                    <el-select v-model="test.testDictionary" placeholder="请选择">
+                    <el-select v-model="test.testDictionary" placeholder="请选择测试字典">
                         <el-option v-for="item in testDictionaryMap" :key="item.value" :label="item.text" :value="item.value"></el-option>
                     </el-select>
                 </el-form-item>
@@ -75,7 +75,7 @@
                     <el-input v-model="test.testName" autocomplete="off"></el-input>
                 </el-form-item>
                 <el-form-item label="测试字典:">
-                    <el-select v-model="test.testDictionary" placeholder="请选择">
+                    <el-select v-model="test.testDictionary" placeholder="请选择测试字典">
                         <el-option v-for="item in testDictionaryMap" :key="item.value" :label="item.text" :value="item.value"></el-option>
                     </el-select>
                 </el-form-item>
@@ -88,7 +88,7 @@
                 <el-button type="primary" @click="handleAddUpdate('/testUpdate')">确定</el-button>
             </div>
         </el-dialog>
-        <el-dialog title="详情" :visible.sync="detailFormVisible">
+        <el-dialog title="详情" :visible.sync="detailVisible">
             <el-form inline label-width="120px" size="mini">
                 <el-form-item label="金额:">
                     {{test.money}}
@@ -114,10 +114,9 @@
     export default {
         data() {
             return {
-                addUpdateTile: "添加",
                 addVisible: false,
                 updateVisible: false,
-                detailFormVisible: false,
+                detailVisible: false,
                 createTimeRange: [],
                 createTimePicker: null,
                 testVO: {
@@ -128,8 +127,6 @@
                     gidList: [],
                     createTime: null,
                     createTimeEnd: null,
-                    updateTime: null,
-                    updateTimeEnd: null,
                     testName: null,
                     testDictionaryList: []
                 },
@@ -207,7 +204,7 @@
             },
             handleDetail(row) {
                 this.handleSetProperties(row);
-                this.detailFormVisible = true;
+                this.detailVisible = true;
             },
             handleAddShow() {
                 this.handleClear();
