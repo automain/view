@@ -19,10 +19,10 @@
   "devDependencies": {
     "@vue/cli-service": "^3.9.2",
     "compression-webpack-plugin": "^3.0.0",
-    "sass": "^1.23.0",
+    "sass": "^1.23.3",
     "sass-loader": "^8.0.0",
     "vue-template-compiler": "^2.5.21",
-    "webpack": "^4.39.3"
+    "webpack": "^4.41.2"
   },
   "postcss": {
     "plugins": {
