@@ -265,35 +265,7 @@
         components: {Menu},
         data() {
             return {
-                menuData: [
-                    {
-                        menuName: "开发工具",
-                        menuIcon: "el-icon-s-cooperation",
-                        children: [
-                            {
-                                menuName: "生成器",
-                                menuIcon: "el-icon-s-platform",
-                                menuPath: "/dev/generator"
-                            },
-                            {
-                                menuName: "测试",
-                                menuIcon: "el-icon-s-flag",
-                                menuPath: "/dev/test"
-                            }
-                        ]
-                    },
-                    {
-                        menuName: "系统管理",
-                        menuIcon: "el-icon-setting",
-                        children: [
-                            {
-                                menuName: "字典",
-                                menuIcon: "el-icon-notebook-2",
-                                menuPath: "/system/dictionary"
-                            }
-                        ]
-                    }
-                ],
+                menuData: [],
                 isCollapse: false,
                 hamburgerTips: "隐藏菜单",
                 hamburgerIconClass: "el-icon-s-fold",
@@ -366,6 +338,12 @@
                         dictionaryMap.set(key, dMap);
                     }
                     this.$local.setMap("dictionaryMap", dictionaryMap);
+                }
+            });
+            this.$axios.post("/authorityMenu").then(response => {
+                let data = response.data;
+                if (data.status === 0) {
+                    this.menuData = data.data;
                 }
             });
         },
