@@ -9,10 +9,16 @@
                     <el-button type="warning" icon="el-icon-delete" @click="handleDelete">删除</el-button>
                 </el-form-item>
                 <el-form-item label="表名:">
-                    <el-input v-model="sysDictionaryVO.tableName" placeholder="表名"></el-input>
+                    <el-select v-model="sysDictionaryVO.tableName" placeholder="表名" @change="getColumns(1)">
+                        <el-option label="全部" value=""></el-option>
+                        <el-option v-for="item in tableList" :key="item" :value="item"></el-option>
+                    </el-select>
                 </el-form-item>
                 <el-form-item label="字段名:">
-                    <el-input v-model="sysDictionaryVO.columnName" placeholder="字段名"></el-input>
+                    <el-select v-model="sysDictionaryVO.columnName" placeholder="字段名">
+                        <el-option label="全部" value=""></el-option>
+                        <el-option v-for="item in columnNameList" :key="item" :value="item"></el-option>
+                    </el-select>
                 </el-form-item>
                 <el-form-item label="字典键:">
                     <el-input v-model="sysDictionaryVO.dictionaryKey" placeholder="字典键"></el-input>
@@ -40,10 +46,14 @@
         <el-dialog title="添加" :visible.sync="addVisible" class="add-update-dialog">
             <el-form :model="sysDictionary" inline label-width="120px" size="mini">
                 <el-form-item label="表名:">
-                    <el-input v-model="sysDictionary.tableName" autocomplete="off"></el-input>
+                    <el-select v-model="sysDictionary.tableName" placeholder="表名" @change="getColumns(2)">
+                        <el-option v-for="item in tableList" :key="item" :value="item"></el-option>
+                    </el-select>
                 </el-form-item>
                 <el-form-item label="字段名:">
-                    <el-input v-model="sysDictionary.columnName" autocomplete="off"></el-input>
+                    <el-select v-model="sysDictionary.columnName" placeholder="字段名">
+                        <el-option v-for="item in addUpdateColumnNameList" :key="item" :value="item"></el-option>
+                    </el-select>
                 </el-form-item>
                 <el-form-item label="字典键:">
                     <el-input v-model="sysDictionary.dictionaryKey" autocomplete="off"></el-input>
@@ -60,10 +70,14 @@
         <el-dialog title="编辑" :visible.sync="updateVisible" class="add-update-dialog">
             <el-form :model="sysDictionary" inline label-width="120px" size="mini">
                 <el-form-item label="表名:">
-                    <el-input v-model="sysDictionary.tableName" autocomplete="off"></el-input>
+                    <el-select v-model="sysDictionary.tableName" placeholder="表名" @change="getColumns(2)">
+                        <el-option v-for="item in tableList" :key="item" :value="item"></el-option>
+                    </el-select>
                 </el-form-item>
                 <el-form-item label="字段名:">
-                    <el-input v-model="sysDictionary.columnName" autocomplete="off"></el-input>
+                    <el-select v-model="sysDictionary.columnName" placeholder="字段名">
+                        <el-option v-for="item in addUpdateColumnNameList" :key="item" :value="item"></el-option>
+                    </el-select>
                 </el-form-item>
                 <el-form-item label="字典键:">
                     <el-input v-model="sysDictionary.dictionaryKey" autocomplete="off"></el-input>
@@ -106,6 +120,9 @@
                     dictionaryKey: null,
                     dictionaryValue: null,
                 },
+                tableList: [],
+                columnNameList: [],
+                addUpdateColumnNameList: [],
             }
         },
         methods: {
@@ -134,6 +151,7 @@
                     let data = response.data;
                     if (data.status === 0) {
                         this.sysDictionary = data.data;
+                        this.getColumns(3);
                     } else {
                         this.$message.error("操作失败");
                     }
@@ -146,6 +164,7 @@
             handleAddShow() {
                 this.handleClear();
                 this.addVisible = true;
+                this.getColumns(2);
             },
             handleClear() {
                 for (let key in this.sysDictionary) {
@@ -193,10 +212,38 @@
                 } else {
                     this.$message.warning("请选择要删除的数据");
                 }
+            },
+            getColumns(type) {// 1:搜索,2:添加,3:编辑
+                let vo = type === 1 ? this.sysDictionaryVO : this.sysDictionary;
+                this.$axios.post("/dev/appColumnList", vo).then(response => {
+                    let data = response.data;
+                    if (data.status === 0) {
+                        let columnList = data.data;
+                        let columnNameList = [];
+                        for (let i = 0, size = columnList.length; i < size; i++) {
+                            columnNameList.push(columnList[i].columnName);
+                        }
+                        if (type === 1) {
+                            this.columnNameList = columnNameList;
+                            this.sysDictionaryVO.columnName = null;
+                        } else {
+                            this.addUpdateColumnNameList = columnNameList;
+                            if (type === 2) {
+                                this.sysDictionary.columnName = null;
+                            }
+                        }
+                    }
+                });
             }
         },
         mounted() {
             this.handleSearch();
+            this.$axios.post("/dev/appTableList").then(response => {
+                let data = response.data;
+                if (data.status === 0) {
+                    this.tableList = data.data;
+                }
+            });
         },
         computed: {
             fullHeight() {
