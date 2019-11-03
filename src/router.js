@@ -11,10 +11,10 @@ export default new Router({
         {
             path: '/', component: () => import('@/components/common/Layout'),
             children: [
-                {path: '/main', name: '首页', component: () => import('@/views/common/Main')},
-                {path: '/tableTest', name: '表格', component: () => import('@/views/common/TableTest')},
-                {path: '/dev/generator', name: '生成器', component: () => import('@/views/common/Generator')},
-                {path: '/dev/test', name: '测试页面', component: () => import('@/views/test/Test')},
+                {path: '/main', name: '首页', component: () => import('@/views/system/Main')},
+                {path: '/dev/generator', name: '生成器', component: () => import('@/views/dev/Generator')},
+                {path: '/dev/test', name: '测试', component: () => import('@/views/dev/Test')},
+                {path: '/system/dictionary', name: '字典', component: () => import('@/views/system/Dictionary')},
             ]
         },
 

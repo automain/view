@@ -267,23 +267,6 @@
             return {
                 menuData: [
                     {
-                        menuName: "菜单1",
-                        menuIcon: "el-icon-user",
-                        children: [
-                            {
-                                menuName: "菜单11",
-                                menuIcon: "el-icon-location",
-                                children: [
-                                    {
-                                        menuPath: "/tableTest",
-                                        menuName: "表格",
-                                        menuIcon: "el-icon-circle-plus"
-                                    }
-                                ]
-                            }
-                        ]
-                    },
-                    {
                         menuName: "开发工具",
                         menuIcon: "el-icon-s-cooperation",
                         children: [
@@ -296,6 +279,17 @@
                                 menuName: "测试",
                                 menuIcon: "el-icon-s-flag",
                                 menuPath: "/dev/test"
+                            }
+                        ]
+                    },
+                    {
+                        menuName: "系统管理",
+                        menuIcon: "el-icon-setting",
+                        children: [
+                            {
+                                menuName: "字典",
+                                menuIcon: "el-icon-notebook-2",
+                                menuPath: "/system/dictionary"
                             }
                         ]
                     }
