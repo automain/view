@@ -11,8 +11,11 @@
                 <el-form-item label="菜单名称:">
                     <el-input v-model="sysMenuVO.menuName" placeholder="菜单名称"></el-input>
                 </el-form-item>
-                <el-form-item label="父级ID:">
-                    <el-input v-model="sysMenuVO.parentId" placeholder="父级ID"></el-input>
+                <el-form-item label="父级:">
+                    <el-select v-model="sysMenuVO.parentId" placeholder="父级">
+                        <el-option label="全部" value=""></el-option>
+                        <el-option v-for="item in allValidMenuList" :key="item" :value="item.id" :label="item.name"></el-option>
+                    </el-select>
                 </el-form-item>
                 <el-form-item label="菜单排序:">
                     <el-input v-model="sysMenuVO.sequenceNumber" placeholder="菜单排序"></el-input>
@@ -39,21 +42,23 @@
         </el-table>
         <el-pagination @size-change="handleSizeChange" @current-change="handlePageChange" :page-sizes="[10, 20, 50, 100]" :page-size="sysMenuVO.size" layout="->, total, prev, pager, next, jumper, sizes" :total="pageBean.total"></el-pagination>
         <el-dialog title="添加" :visible.sync="addVisible" class="add-update-dialog">
-            <el-form :model="sysMenu" inline label-width="120px" size="mini">
+            <el-form :model="sysMenu" inline label-width="120px" ref="sysMenu" size="mini">
                 <el-form-item label="菜单路径:">
                     <el-input v-model="sysMenu.menuPath" autocomplete="off"></el-input>
                 </el-form-item>
-                <el-form-item label="菜单名称:">
+                <el-form-item label="菜单名称:" prop="menuName">
                     <el-input v-model="sysMenu.menuName" autocomplete="off"></el-input>
                 </el-form-item>
-                <el-form-item label="菜单图标:">
+                <el-form-item label="菜单图标:" prop="menuIcon">
                     <el-input v-model="sysMenu.menuIcon" autocomplete="off"></el-input>
                 </el-form-item>
-                <el-form-item label="父级ID:">
-                    <el-input v-model="sysMenu.parentId" autocomplete="off"></el-input>
+                <el-form-item label="父级:">
+                    <el-select v-model="sysMenu.parentId" placeholder="父级">
+                        <el-option v-for="item in allValidMenuList" :key="item" :value="item.id" :label="item.name"></el-option>
+                    </el-select>
                 </el-form-item>
-                <el-form-item label="菜单排序:">
-                    <el-input v-model="sysMenu.sequenceNumber" autocomplete="off"></el-input>
+                <el-form-item label="菜单排序:" prop="sequenceNumber">
+                    <el-input v-model.number="sysMenu.sequenceNumber" autocomplete="off"></el-input>
                 </el-form-item>
             </el-form>
             <div slot="footer" class="dialog-footer">
@@ -66,17 +71,19 @@
                 <el-form-item label="菜单路径:">
                     <el-input v-model="sysMenu.menuPath" autocomplete="off"></el-input>
                 </el-form-item>
-                <el-form-item label="菜单名称:">
+                <el-form-item label="菜单名称:" prop="menuName">
                     <el-input v-model="sysMenu.menuName" autocomplete="off"></el-input>
                 </el-form-item>
-                <el-form-item label="菜单图标:">
+                <el-form-item label="菜单图标:" prop="menuIcon">
                     <el-input v-model="sysMenu.menuIcon" autocomplete="off"></el-input>
                 </el-form-item>
                 <el-form-item label="父级ID:">
-                    <el-input v-model="sysMenu.parentId" autocomplete="off"></el-input>
+                    <el-select v-model="sysMenu.parentId" placeholder="父级">
+                        <el-option v-for="item in allValidMenuList" :key="item" :value="item.id" :label="item.name"></el-option>
+                    </el-select>
                 </el-form-item>
-                <el-form-item label="菜单排序:">
-                    <el-input v-model="sysMenu.sequenceNumber" autocomplete="off"></el-input>
+                <el-form-item label="菜单排序:" prop="sequenceNumber">
+                    <el-input v-model.number="sysMenu.sequenceNumber" autocomplete="off"></el-input>
                 </el-form-item>
             </el-form>
             <div slot="footer" class="dialog-footer">
@@ -115,6 +122,12 @@
                     menuIcon: null,
                     parentId: null,
                     sequenceNumber: null,
+                },
+                allValidMenuList: [],
+                rules: {
+                    menuName: [{ required: true, message: '菜单名称不能为空'}],
+                    menuIcon: [{ required: true, message: '菜单图标不能为空'}],
+                    sequenceNumber: [{ required: true, message: '排序不能为空'},{ type: 'number', message: '排序必须为数字值'}],
                 },
             }
         },
@@ -216,6 +229,15 @@
         },
         mounted() {
             this.handleSearch();
+            this.$axios.post("/allValidMenu").then(response => {
+               let data = response.data;
+               if (data.status === 0) {
+                   let menuList = [];
+                   menuList.push({"id": 0, "name": "顶级"});
+                   menuList.push(...data.data);
+                   this.allValidMenuList = menuList;
+               }
+            });
         },
        computed: {
             fullHeight() {
