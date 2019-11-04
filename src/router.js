@@ -15,7 +15,7 @@ export default new Router({
                 {path: '/dev/generator', name: '生成器', component: () => import('@/views/dev/Generator')},
                 {path: '/dev/test', name: '测试', component: () => import('@/views/dev/Test')},
                 {path: '/system/dictionary', name: '字典', component: () => import('@/views/system/Dictionary')},
-                {path: '/system/menu', name: '字典', component: () => import('@/views/system/Menu')},
+                {path: '/system/menu', name: '菜单', component: () => import('@/views/system/Menu')},
             ]
         },
 

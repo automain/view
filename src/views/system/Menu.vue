@@ -14,11 +14,8 @@
                 <el-form-item label="父级:">
                     <el-select v-model="sysMenuVO.parentId" placeholder="父级">
                         <el-option label="全部" value=""></el-option>
-                        <el-option v-for="item in allValidMenuList" :key="item" :value="item.id" :label="item.name"></el-option>
+                        <el-option v-for="(item,key) in allValidMenuList" :key="key" :value="item.id" :label="item.name"></el-option>
                     </el-select>
-                </el-form-item>
-                <el-form-item label="菜单排序:">
-                    <el-input v-model="sysMenuVO.sequenceNumber" placeholder="菜单排序"></el-input>
                 </el-form-item>
                 <el-form-item>
                     <el-button type="primary" icon="el-icon-search" @click="handleSearch()">查询</el-button>
@@ -31,8 +28,12 @@
             <el-table-column prop="updateTime" label="更新时间" width="160" :formatter="dateTimeFormatter"></el-table-column>
             <el-table-column prop="menuPath" label="菜单路径"></el-table-column>
             <el-table-column prop="menuName" label="菜单名称"></el-table-column>
-            <el-table-column prop="menuIcon" label="菜单图标"></el-table-column>
-            <el-table-column prop="parentId" label="父级ID"></el-table-column>
+            <el-table-column prop="menuIcon" label="菜单图标">
+                <template slot-scope="scope">
+                    <i :class="scope.row.menuIcon"></i>
+                </template>
+            </el-table-column>
+            <el-table-column prop="parentId" label="父级" :formatter="formatParentMenu"></el-table-column>
             <el-table-column prop="sequenceNumber" label="菜单排序" sortable="custom"></el-table-column>
             <el-table-column fixed="right" label="操作" width="100">
                 <template slot-scope="scope">
@@ -42,7 +43,7 @@
         </el-table>
         <el-pagination @size-change="handleSizeChange" @current-change="handlePageChange" :page-sizes="[10, 20, 50, 100]" :page-size="sysMenuVO.size" layout="->, total, prev, pager, next, jumper, sizes" :total="pageBean.total"></el-pagination>
         <el-dialog title="添加" :visible.sync="addVisible" class="add-update-dialog">
-            <el-form :model="sysMenu" inline label-width="120px" ref="sysMenu" size="mini">
+            <el-form :model="sysMenu" inline label-width="120px" ref="sysMenuAdd" :rules="rules" size="mini">
                 <el-form-item label="菜单路径:">
                     <el-input v-model="sysMenu.menuPath" autocomplete="off"></el-input>
                 </el-form-item>
@@ -52,9 +53,9 @@
                 <el-form-item label="菜单图标:" prop="menuIcon">
                     <el-input v-model="sysMenu.menuIcon" autocomplete="off"></el-input>
                 </el-form-item>
-                <el-form-item label="父级:">
+                <el-form-item label="父级:" prop="parentId">
                     <el-select v-model="sysMenu.parentId" placeholder="父级">
-                        <el-option v-for="item in allValidMenuList" :key="item" :value="item.id" :label="item.name"></el-option>
+                        <el-option v-for="(item,key) in allValidMenuList" :key="key" :value="item.id" :label="item.name"></el-option>
                     </el-select>
                 </el-form-item>
                 <el-form-item label="菜单排序:" prop="sequenceNumber">
@@ -63,11 +64,11 @@
             </el-form>
             <div slot="footer" class="dialog-footer">
                 <el-button @click="addVisible = false">取消</el-button>
-                <el-button type="primary" @click="handleAddUpdate('/menuAdd')">确定</el-button>
+                <el-button type="primary" @click="handleAddUpdate('/menuAdd', 'sysMenuAdd')">确定</el-button>
             </div>
         </el-dialog>
         <el-dialog title="编辑" :visible.sync="updateVisible" class="add-update-dialog">
-            <el-form :model="sysMenu" inline label-width="120px" size="mini">
+            <el-form :model="sysMenu" inline label-width="120px" ref="sysMenuUpdate" :rules="rules" size="mini">
                 <el-form-item label="菜单路径:">
                     <el-input v-model="sysMenu.menuPath" autocomplete="off"></el-input>
                 </el-form-item>
@@ -77,9 +78,9 @@
                 <el-form-item label="菜单图标:" prop="menuIcon">
                     <el-input v-model="sysMenu.menuIcon" autocomplete="off"></el-input>
                 </el-form-item>
-                <el-form-item label="父级ID:">
+                <el-form-item label="父级ID:" prop="parentId">
                     <el-select v-model="sysMenu.parentId" placeholder="父级">
-                        <el-option v-for="item in allValidMenuList" :key="item" :value="item.id" :label="item.name"></el-option>
+                        <el-option v-for="(item,key) in allValidMenuList" :key="key" :value="item.id" :label="item.name"></el-option>
                     </el-select>
                 </el-form-item>
                 <el-form-item label="菜单排序:" prop="sequenceNumber">
@@ -88,7 +89,7 @@
             </el-form>
             <div slot="footer" class="dialog-footer">
                 <el-button @click="updateVisible = false">取消</el-button>
-                <el-button type="primary" @click="handleAddUpdate('/menuUpdate')">确定</el-button>
+                <el-button type="primary" @click="handleAddUpdate('/menuUpdate', 'sysMenuUpdate')">确定</el-button>
             </div>
         </el-dialog>
     </div>
@@ -108,7 +109,6 @@
                     idList: [],
                     menuName: null,
                     parentId: null,
-                    sequenceNumber: null,
                 },
                 pageBean: {
                     page: 1,
@@ -127,6 +127,7 @@
                 rules: {
                     menuName: [{ required: true, message: '菜单名称不能为空'}],
                     menuIcon: [{ required: true, message: '菜单图标不能为空'}],
+                    parentId: [{ required: true, message: '父级菜单不能为空'}],
                     sequenceNumber: [{ required: true, message: '排序不能为空'},{ type: 'number', message: '排序必须为数字值'}],
                 },
             }
@@ -178,6 +179,9 @@
             handleAddShow() {
                 this.handleClear();
                 this.addVisible = true;
+                if (this.$refs['sysMenuAdd']) {
+                    this.$refs['sysMenuAdd'].resetFields();
+                }
             },
             handleClear() {
                 for (let key in this.sysMenu) {
@@ -186,17 +190,23 @@
                     }
                 }
             },
-            handleAddUpdate(uri) {
-                this.$axios.post(uri, this.sysMenu).then(response => {
-                    let data = response.data;
-                    if (data.status === 0) {
-                        this.$message.success("操作成功");
-                        this.handleClear();
-                        this.handleSearch();
-                        this.addVisible = false;
-                        this.updateVisible = false;
+            handleAddUpdate(uri, formName) {
+                this.$refs[formName].validate((valid) => {
+                    if (valid) {
+                        this.$axios.post(uri, this.sysMenu).then(response => {
+                            let data = response.data;
+                            if (data.status === 0) {
+                                this.$message.success("操作成功");
+                                this.handleClear();
+                                this.handleSearch();
+                                this.addVisible = false;
+                                this.updateVisible = false;
+                            } else {
+                                this.$message.error("操作失败");
+                            }
+                        });
                     } else {
-                        this.$message.error("操作失败");
+                        return false;
                     }
                 });
             },
@@ -225,6 +235,15 @@
                 } else {
                     this.$message.warning("请选择要删除的数据");
                 }
+            },
+            formatParentMenu(row, column) {
+                let parentId = row.parentId;
+                for (let i = 0, size = this.allValidMenuList.length; i < size; i ++) {
+                    if (this.allValidMenuList[i].id === parentId) {
+                        return this.allValidMenuList[i].name;
+                    }
+                }
+                return "";
             }
         },
         mounted() {
