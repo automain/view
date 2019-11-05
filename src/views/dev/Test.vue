@@ -138,6 +138,7 @@
                 test: {
                     gid: null,
                     createTime: null,
+                    updateTime: null,
                     money: null,
                     remark: null,
                     testName: null,
