@@ -43,8 +43,8 @@
         </el-table>
         <el-pagination @size-change="handleSizeChange" @current-change="handlePageChange" :page-sizes="[10, 20, 50, 100]" :page-size="sysMenuVO.size" layout="->, total, prev, pager, next, jumper, sizes" :total="pageBean.total"></el-pagination>
         <el-dialog title="添加" :visible.sync="addVisible" class="add-update-dialog">
-            <el-form :model="sysMenu" inline label-width="120px" ref="sysMenuAdd" :rules="rules" size="mini">
-                <el-form-item label="菜单路径:">
+            <el-form :model="sysMenu" ref="sysMenuAdd" :rules="rules" inline label-width="120px" size="mini">
+                <el-form-item label="菜单路径:" prop="menuPath">
                     <el-input v-model="sysMenu.menuPath" autocomplete="off"></el-input>
                 </el-form-item>
                 <el-form-item label="菜单名称:" prop="menuName">
@@ -68,8 +68,8 @@
             </div>
         </el-dialog>
         <el-dialog title="编辑" :visible.sync="updateVisible" class="add-update-dialog">
-            <el-form :model="sysMenu" inline label-width="120px" ref="sysMenuUpdate" :rules="rules" size="mini">
-                <el-form-item label="菜单路径:">
+            <el-form :model="sysMenu" ref="sysMenuUpdate" :rules="rules" inline label-width="120px" size="mini">
+                <el-form-item label="菜单路径:" prop="menuPath">
                     <el-input v-model="sysMenu.menuPath" autocomplete="off"></el-input>
                 </el-form-item>
                 <el-form-item label="菜单名称:" prop="menuName">
