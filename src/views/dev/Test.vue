@@ -8,9 +8,6 @@
                 <el-form-item>
                     <el-button type="warning" icon="el-icon-delete" @click="handleDelete">删除</el-button>
                 </el-form-item>
-                <el-form-item label="测试名称:">
-                    <el-input v-model="testVO.testName" placeholder="测试名称"></el-input>
-                </el-form-item>
                 <el-form-item label="创建时间:">
                     <el-date-picker v-model="createTimeRange" type="datetimerange" start-placeholder="开始时间" end-placeholder="结束时间" :onPick="handleCreateTimeRange()" value-format="timestamp"></el-date-picker>
                 </el-form-item>
@@ -23,9 +20,10 @@
             <el-table-column type="selection" width="42" fixed="left"></el-table-column>
             <el-table-column prop="createTime" label="创建时间" width="160" :formatter="dateTimeFormatter" sortable="custom"></el-table-column>
             <el-table-column prop="updateTime" label="更新时间" width="160" :formatter="dateTimeFormatter"></el-table-column>
+            <el-table-column prop="money" label="金额"></el-table-column>
             <el-table-column prop="remark" label="备注" show-overflow-tooltip></el-table-column>
             <el-table-column prop="testName" label="测试名称"></el-table-column>
-            <el-table-column prop="testDictionary" label="测试字典" column-key="testDictionary" :filters="testDictionaryMap">
+            <el-table-column prop="testDictionary" label="测试字典(0:字典0,1:字典1,2:字典2)" column-key="testDictionary" :filters="testDictionaryMap">
                 <template slot-scope="scope">
                     {{scope.row.testDictionary | dictionaryFilter(testDictionaryKey)}}
                 </template>
@@ -40,56 +38,62 @@
         <el-pagination @size-change="handleSizeChange" @current-change="handlePageChange" :page-sizes="[10, 20, 50, 100]" :page-size="testVO.size" layout="->, total, prev, pager, next, jumper, sizes" :total="pageBean.total"></el-pagination>
         <el-dialog title="添加" :visible.sync="addVisible" class="add-update-dialog">
             <el-form :model="test" ref="testAdd" :rules="rules" inline label-width="120px" size="mini">
-                <el-form-item label="金额:" prop="money">
+                <el-form-item label="创建时间:">
+                    <el-date-picker v-model="createTimePicker" type="datetime" placeholder="请选择创建时间" value-format="timestamp" @change="function(val){test.createTime = val / 1000}"></el-date-picker>
+                </el-form-item>
+                <el-form-item label="金额:">
                     <el-input v-model="test.money" autocomplete="off"></el-input>
                 </el-form-item>
-                <el-form-item label="备注:" prop="remark">
-                    <el-input type="textarea" v-model="test.remark"></el-input>
+                <el-form-item label="备注:">
+                    <el-input v-model="test.remark" type="textarea"></el-input>
                 </el-form-item>
-                <el-form-item label="测试名称:" prop="testName">
+                <el-form-item label="测试名称:">
                     <el-input v-model="test.testName" autocomplete="off"></el-input>
                 </el-form-item>
-                <el-form-item label="测试字典:" prop="testDictionary">
-                    <el-select v-model="test.testDictionary" placeholder="请选择测试字典">
+                <el-form-item label="测试字典(0:字典0,1:字典1,2:字典2):">
+                    <el-select v-model="test.testDictionary" placeholder="请选择测试字典(0:字典0,1:字典1,2:字典2)">
                         <el-option v-for="item in testDictionaryMap" :key="item.value" :label="item.text" :value="item.value"></el-option>
                     </el-select>
-                </el-form-item>
-                <el-form-item label="创建时间:" prop="createTime">
-                    <el-date-picker v-model="createTimePicker" type="datetime" placeholder="请选择创建时间" value-format="timestamp" @change="function(val){test.createTime = val / 1000}"></el-date-picker>
                 </el-form-item>
             </el-form>
             <div slot="footer" class="dialog-footer">
                 <el-button @click="addVisible = false">取消</el-button>
-                <el-button type="primary" @click="handleAddUpdate('/testAdd','testAdd')">确定</el-button>
+                <el-button type="primary" @click="handleAddUpdate('/testAdd', 'testAdd')">确定</el-button>
             </div>
         </el-dialog>
         <el-dialog title="编辑" :visible.sync="updateVisible" class="add-update-dialog">
             <el-form :model="test" ref="testUpdate" :rules="rules" inline label-width="120px" size="mini">
-                <el-form-item label="金额:" prop="money">
+                <el-form-item label="创建时间:">
+                    <el-date-picker v-model="createTimePicker" type="datetime" placeholder="请选择创建时间" value-format="timestamp" @change="function(val){test.createTime = val / 1000}"></el-date-picker>
+                </el-form-item>
+                <el-form-item label="金额:">
                     <el-input v-model="test.money" autocomplete="off"></el-input>
                 </el-form-item>
-                <el-form-item label="备注:" prop="remark">
-                    <el-input type="textarea" v-model="test.remark"></el-input>
+                <el-form-item label="备注:">
+                    <el-input v-model="test.remark" type="textarea"></el-input>
                 </el-form-item>
-                <el-form-item label="测试名称:" prop="testName">
+                <el-form-item label="测试名称:">
                     <el-input v-model="test.testName" autocomplete="off"></el-input>
                 </el-form-item>
-                <el-form-item label="测试字典:" prop="testDictionary">
-                    <el-select v-model="test.testDictionary" placeholder="请选择测试字典">
+                <el-form-item label="测试字典(0:字典0,1:字典1,2:字典2):">
+                    <el-select v-model="test.testDictionary" placeholder="请选择测试字典(0:字典0,1:字典1,2:字典2)">
                         <el-option v-for="item in testDictionaryMap" :key="item.value" :label="item.text" :value="item.value"></el-option>
                     </el-select>
-                </el-form-item>
-                <el-form-item label="创建时间:" prop="createTime">
-                    <el-date-picker v-model="createTimePicker" type="datetime" placeholder="请选择创建时间" value-format="timestamp" @change="function(val){test.createTime = val / 1000}"></el-date-picker>
                 </el-form-item>
             </el-form>
             <div slot="footer" class="dialog-footer">
                 <el-button @click="updateVisible = false">取消</el-button>
-                <el-button type="primary" @click="handleAddUpdate('/testUpdate','testUpdate')">确定</el-button>
+                <el-button type="primary" @click="handleAddUpdate('/testUpdate', 'testUpdate')">确定</el-button>
             </div>
         </el-dialog>
         <el-dialog title="详情" :visible.sync="detailVisible">
             <el-form inline label-width="120px" size="mini">
+                <el-form-item label="创建时间:">
+                    {{test.createTime | dateTimeFilter}}
+                </el-form-item>
+                <el-form-item label="更新时间:">
+                    {{test.updateTime | dateTimeFilter}}
+                </el-form-item>
                 <el-form-item label="金额:">
                     {{test.money}}
                 </el-form-item>
@@ -99,11 +103,8 @@
                 <el-form-item label="测试名称:">
                     {{test.testName}}
                 </el-form-item>
-                <el-form-item label="测试字典:">
+                <el-form-item label="测试字典(0:字典0,1:字典1,2:字典2):">
                     {{test.testDictionary | dictionaryFilter(testDictionaryKey)}}
-                </el-form-item>
-                <el-form-item label="创建时间:">
-                    {{test.createTime | dateTimeFilter}}
                 </el-form-item>
             </el-form>
         </el-dialog>
@@ -127,8 +128,7 @@
                     gidList: [],
                     createTime: null,
                     createTimeEnd: null,
-                    testName: null,
-                    testDictionaryList: []
+                    testDictionaryList: [],
                 },
                 pageBean: {
                     page: 1,
@@ -137,10 +137,10 @@
                 },
                 test: {
                     gid: null,
+                    createTime: null,
                     money: null,
                     remark: null,
                     testName: null,
-                    createTime: null,
                     testDictionary: null,
                 },
                 testDictionaryKey: "test_test_dictionary",
@@ -148,7 +148,7 @@
                 rules: {
                     createTime: [{required: true, message: '创建时间不能为空'}],
                     testName: [{required: true, message: '测试名称不能为空'}],
-                    testDictionary: [{required: true, message: '测试字典不能为空'}],
+                    testDictionary: [{required: true, message: '测试字典(0:字典0,1:字典1,2:字典2)不能为空'}],
                 },
             }
         },
@@ -213,11 +213,11 @@
             },
             handleAddShow() {
                 this.handleClear();
-                this.createTimePicker = null;
-                this.addVisible = true;
                 if (this.$refs['testAdd']) {
                     this.$refs['testAdd'].resetFields();
                 }
+                this.createTimePicker = null;
+                this.addVisible = true;
             },
             handleClear() {
                 for (let key in this.test) {

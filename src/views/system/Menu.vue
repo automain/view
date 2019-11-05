@@ -178,10 +178,10 @@
             },
             handleAddShow() {
                 this.handleClear();
-                this.addVisible = true;
                 if (this.$refs['sysMenuAdd']) {
                     this.$refs['sysMenuAdd'].resetFields();
                 }
+                this.addVisible = true;
             },
             handleClear() {
                 for (let key in this.sysMenu) {
