@@ -1,7 +1,7 @@
 <template>
-    <div>
+    <div class="login-bg" :style="{height: this.fullHeight+'px'}">
         <el-row type="flex" class="row-bg" justify="center">
-            <el-col :span="6">
+            <el-col :xs="20" :sm="16" :md="12" :lg="8" :xl="6">
                 <el-card shadow="hover">
                     <el-row type="flex" class="row-line" justify="center">
                         <el-col :span="2">
@@ -21,8 +21,21 @@
                         </el-col>
                     </el-row>
                     <el-row type="flex" class="row-line" justify="center">
+                        <el-col :span="15">
+                            <el-input placeholder="验证码" v-model="user.captcha" clearable></el-input>
+                        </el-col>
+                        <el-col :span="6" :offset="1">
+                            <el-image src="https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg" fit="fill" class="captcha-img"></el-image>
+                        </el-col>
+                    </el-row>
+                    <el-row type="flex" class="row-line" justify="center">
                         <el-col :span="22">
-                            <el-button type="primary" round>登录</el-button>
+                            <el-button type="primary" class="login-btn" round>登录</el-button>
+                        </el-col>
+                    </el-row>
+                    <el-row type="flex" class="row-line" justify="center">
+                        <el-col :span="4" :offset="18">
+                            <el-link :underline="false">忘记密码</el-link>
                         </el-col>
                     </el-row>
                 </el-card>
@@ -31,12 +44,30 @@
     </div>
 </template>
 <style lang="scss">
-    .row-bg {
-        padding-top: 10%;
-        .row-line {
-            padding-top: 15px;
+    body {
+        margin: 0px;
+    }
+    .login-bg {
+        background-color: #2d3a4b;
+
+        .row-bg {
+            padding-top: 10%;
+
+            .row-line {
+                padding-top: 15px;
+            }
+
+            .captcha-img {
+                width: 100%;
+                height: 40px;
+            }
+
+            .login-btn {
+                width: 100%;
+            }
         }
     }
+
 </style>
 <script>
     export default {
@@ -45,8 +76,16 @@
                 user: {
                     userName: null,
                     password: null,
-                }
+                    captcha: null,
+                },
+                fullHeight: document.documentElement.clientHeight,
             }
+        },
+        mounted() {
+            window.onresize = () => {
+                window.fullHeight = document.documentElement.clientHeight;
+                this.fullHeight = window.fullHeight;
+            };
         }
     }
 </script>
