@@ -59,7 +59,7 @@
     </div>
 </template>
 <style lang="scss">
-    @import "../../assets/css/variables.scss";
+    @import "../assets/css/variables";
 
     body {
         margin: 0px;
@@ -259,7 +259,7 @@
     }
 </style>
 <script>
-    import Menu from "@/components/common/Menu";
+    import Menu from "@/components/Menu";
 
     export default {
         components: {Menu},
