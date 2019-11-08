@@ -2,7 +2,7 @@
     <div class="login-bg" :style="{height: this.fullHeight+'px'}">
         <el-row type="flex" class="row-bg" justify="center">
             <el-col :xs="20" :sm="16" :md="12" :lg="8" :xl="6">
-                <el-card shadow="hover">
+                <el-card shadow="hover" class="login-card">
                     <el-row type="flex" class="row-line" justify="center">
                         <el-col :span="2">
                             <div class="head-image">
@@ -21,11 +21,15 @@
                         </el-col>
                     </el-row>
                     <el-row type="flex" class="row-line" justify="center">
-                        <el-col :span="15">
+                        <el-col :span="14">
                             <el-input placeholder="验证码" v-model="user.captcha" clearable></el-input>
                         </el-col>
-                        <el-col :span="6" :offset="1">
-                            <el-image src="https://fuss10.elemecdn.com/e/5d/4a731a90594a4af544c0c25941171jpeg.jpeg" fit="fill" class="captcha-img"></el-image>
+                        <el-col :span="7" :offset="1">
+                            <el-image :src="'data:image/png;base64,' + captchaImage" @click="refreshCaptcha" fit="fill" alt="验证码" class="captcha-img">
+                                <div slot="error" class="image-slot">
+                                    <i class="el-icon-picture-outline"></i>
+                                </div>
+                            </el-image>
                         </el-col>
                     </el-row>
                     <el-row type="flex" class="row-line" justify="center">
@@ -44,11 +48,19 @@
     </div>
 </template>
 <style lang="scss">
+    @import "../assets/css/variables";
+
     body {
         margin: 0px;
     }
+
     .login-bg {
-        background-color: #2d3a4b;
+        background-image: url("../assets/image/login_bg.jpg");
+
+        .login-card {
+            background-color: $mainBackgroundColor;
+            box-shadow: rgba(245, 255, 250, 0.1);
+        }
 
         .row-bg {
             padding-top: 10%;
@@ -60,6 +72,7 @@
             .captcha-img {
                 width: 100%;
                 height: 40px;
+                cursor:pointer;
             }
 
             .login-btn {
@@ -79,6 +92,20 @@
                     captcha: null,
                 },
                 fullHeight: document.documentElement.clientHeight,
+                captchaKey: null,
+                captchaImage: null,
+            }
+        },
+        methods: {
+            refreshCaptcha() {
+                this.$axios.post('/getCaptcha').then(response => {
+                    let data = response.data;
+                    if (data.status === 0) {
+                        let result = data.data;
+                        this.captchaKey = result.captchaKey;
+                        this.captchaImage = result.captchaImage;
+                    }
+                });
             }
         },
         mounted() {
@@ -86,6 +113,7 @@
                 window.fullHeight = document.documentElement.clientHeight;
                 this.fullHeight = window.fullHeight;
             };
+            this.refreshCaptcha();
         }
     }
 </script>
