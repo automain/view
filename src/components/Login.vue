@@ -90,9 +90,9 @@
                     userName: null,
                     password: null,
                     captcha: null,
+                    captchaKey: null,
                 },
                 fullHeight: document.documentElement.clientHeight,
-                captchaKey: null,
                 captchaImage: null,
             }
         },
@@ -102,7 +102,7 @@
                     let data = response.data;
                     if (data.status === 0) {
                         let result = data.data;
-                        this.captchaKey = result.captchaKey;
+                        this.user.captchaKey = result.captchaKey;
                         this.captchaImage = result.captchaImage;
                     }
                 });

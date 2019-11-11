@@ -1,0 +1,213 @@
+<template>
+    <div>
+        <el-card class="box-card">
+            <el-form :inline="true" :model="sysUserVO" size="mini">
+                <el-form-item>
+                    <el-button type="success" icon="el-icon-plus" @click="handleAddShow">添加</el-button>
+                </el-form-item>
+                <el-form-item>
+                    <el-button type="warning" icon="el-icon-delete" @click="handleDelete">删除</el-button>
+                </el-form-item>
+                <el-form-item label="用户名:">
+                    <el-input v-model="sysUserVO.userName" placeholder="用户名"></el-input>
+                </el-form-item>
+                <el-form-item label="手机号:">
+                    <el-input v-model="sysUserVO.phone" placeholder="手机号"></el-input>
+                </el-form-item>
+                <el-form-item>
+                    <el-button type="primary" icon="el-icon-search" @click="handleSearch()">查询</el-button>
+                </el-form-item>
+            </el-form>
+        </el-card>
+        <el-table ref="multipleTable" :data="pageBean.data" tooltip-effect="dark" :height="fullHeight" @selection-change="selectToDelete" @filter-change="handleFilterChange">
+            <el-table-column type="selection" width="42" fixed="left"></el-table-column>
+            <el-table-column prop="createTime" label="创建时间" width="160" :formatter="dateTimeFormatter"></el-table-column>
+            <el-table-column prop="updateTime" label="更新时间" width="160" :formatter="dateTimeFormatter"></el-table-column>
+            <el-table-column prop="userName" label="用户名"></el-table-column>
+            <el-table-column prop="phone" label="手机号"></el-table-column>
+            <el-table-column prop="email" label="邮箱"></el-table-column>
+            <el-table-column fixed="right" label="操作" width="100">
+                <template slot-scope="scope">
+                    <el-button @click="handleUpdateShow(scope.row)" type="text" size="small">编辑</el-button>
+                </template>
+            </el-table-column>
+        </el-table>
+        <el-pagination @size-change="handleSizeChange" @current-change="handlePageChange" :page-sizes="[10, 20, 50, 100]" :page-size="sysUserVO.size" layout="->, total, prev, pager, next, jumper, sizes" :total="pageBean.total"></el-pagination>
+        <el-dialog title="添加" :visible.sync="addVisible" class="add-update-dialog">
+            <el-form :model="sysUser" ref="sysUserAdd" :rules="rules" inline label-width="120px" size="mini">
+                <el-form-item label="用户名:">
+                    <el-input v-model="sysUser.userName" autocomplete="off"></el-input>
+                </el-form-item>
+                <el-form-item label="密码MD5值:">
+                    <el-input v-model="sysUser.passwordMd5" autocomplete="off"></el-input>
+                </el-form-item>
+                <el-form-item label="手机号:">
+                    <el-input v-model="sysUser.phone" autocomplete="off"></el-input>
+                </el-form-item>
+                <el-form-item label="邮箱:">
+                    <el-input v-model="sysUser.email" autocomplete="off"></el-input>
+                </el-form-item>
+            </el-form>
+            <div slot="footer" class="dialog-footer">
+                <el-button @click="addVisible = false">取消</el-button>
+                <el-button type="primary" @click="handleAddUpdate('/userAdd', 'sysUserAdd')">确定</el-button>
+            </div>
+        </el-dialog>
+        <el-dialog title="编辑" :visible.sync="updateVisible" class="add-update-dialog">
+            <el-form :model="sysUser" ref="sysUserUpdate" :rules="rules" inline label-width="120px" size="mini">
+                <el-form-item label="用户名:">
+                    <el-input v-model="sysUser.userName" autocomplete="off"></el-input>
+                </el-form-item>
+                <el-form-item label="手机号:">
+                    <el-input v-model="sysUser.phone" autocomplete="off"></el-input>
+                </el-form-item>
+                <el-form-item label="邮箱:">
+                    <el-input v-model="sysUser.email" autocomplete="off"></el-input>
+                </el-form-item>
+            </el-form>
+            <div slot="footer" class="dialog-footer">
+                <el-button @click="updateVisible = false">取消</el-button>
+                <el-button type="primary" @click="handleAddUpdate('/userUpdate', 'sysUserUpdate')">确定</el-button>
+            </div>
+        </el-dialog>
+    </div>
+</template>
+
+<script>
+    export default {
+        data() {
+            return {
+                addVisible: false,
+                updateVisible: false,
+                sysUserVO: {
+                    page: 1,
+                    size: 10,
+                    gidList: [],
+                    userName: null,
+                    phone: null,
+                },
+                pageBean: {
+                    page: 1,
+                    total: 0,
+                    data: [],
+                },
+                sysUser: {
+                    gid: null,
+                    userName: null,
+                    passwordMd5: null,
+                    phone: null,
+                    email: null,
+                },
+                rules: {
+                    userName: [{required: true, message: '用户名不能为空'}],
+                    phone: [{required: true, message: '手机号不能为空'}],
+                    email: [{required: true, message: '邮箱不能为空'}],
+                },
+            }
+        },
+        methods: {
+            handleSizeChange(val) {
+                this.sysUserVO.size = val;
+                this.handleSearch();
+            },
+            handlePageChange(val) {
+                this.sysUserVO.page = val;
+                this.handleSearch();
+            },
+            handleSearch() {
+                this.$axios.post("/userList", this.sysUserVO).then(response => {
+                    let data = response.data;
+                    if (data.status === 0) {
+                        this.pageBean = data.data;
+                    }
+                });
+            },
+            handleFilterChange(data) {
+                this.handleSearch();
+            },
+            handleSetProperties(row) {
+                this.sysUser.gid = row.gid;
+                this.$axios.post("/userDetail", this.sysUser).then(response => {
+                    let data = response.data;
+                    if (data.status === 0) {
+                        this.sysUser = data.data;
+                    } else {
+                        this.$message.error("操作失败");
+                    }
+                });
+            },
+            handleUpdateShow(row) {
+                this.handleSetProperties(row);
+                this.updateVisible = true;
+            },
+            handleAddShow() {
+                this.handleClear();
+                if (this.$refs['sysUserAdd']) {
+                    this.$refs['sysUserAdd'].resetFields();
+                }
+                this.addVisible = true;
+            },
+            handleClear() {
+                for (let key in this.sysUser) {
+                    if (this.sysUser.hasOwnProperty(key)) {
+                        this.sysUser[key] = null;
+                    }
+                }
+            },
+            handleAddUpdate(uri, formName) {
+                this.$refs[formName].validate((valid) => {
+                    if (valid) {
+                        this.$axios.post(uri, this.sysUser).then(response => {
+                            let data = response.data;
+                            if (data.status === 0) {
+                                this.$message.success("操作成功");
+                                this.handleClear();
+                                this.handleSearch();
+                                this.addVisible = false;
+                                this.updateVisible = false;
+                            } else {
+                                this.$message.error("操作失败");
+                            }
+                        });
+                    } else {
+                        return false;
+                    }
+                });
+            },
+            selectToDelete(val) {
+                let gidList = [];
+                for (let i = 0, size = val.length; i < size; i++) {
+                    gidList.push(val[i].gid);
+                }
+                this.sysUserVO.gidList = gidList;
+            },
+            handleDelete() {
+                if (this.sysUserVO.gidList.length > 0) {
+                    this.$confirm("确定删除选中的数据?", "提示", {type: "warning"}).then(() => {
+                        this.$axios.post("/userDelete", this.sysUserVO).then(response => {
+                            let data = response.data;
+                            if (data.status === 0) {
+                                this.$message.success("操作成功");
+                                this.handleSearch();
+                            } else {
+                                this.$message.error("操作失败");
+                            }
+                        });
+                    }).catch(() => {
+                        this.$message.info("取消删除");
+                    });
+                } else {
+                    this.$message.warning("请选择要删除的数据");
+                }
+            }
+        },
+        mounted() {
+            this.handleSearch();
+        },
+       computed: {
+            fullHeight() {
+                return this.$store.state.fullHeight - 140;
+            }
+        }
+    }
+</script>
