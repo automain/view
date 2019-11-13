@@ -340,12 +340,7 @@
                     this.$local.setMap("dictionaryMap", dictionaryMap);
                 }
             });
-            this.$axios.post("/authorityMenu").then(response => {
-                let data = response.data;
-                if (data.status === 0) {
-                    this.menuData = data.data;
-                }
-            });
+            this.menuData = this.$local.get("menuData");
         },
         computed: {
             hamburgerClass() {

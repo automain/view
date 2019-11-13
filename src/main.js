@@ -24,6 +24,20 @@ Vue.prototype.$axios = axios.create({
     withCredentials: true,
     headers: {'Content-Type': 'application/json;charset=UTF-8'}
 });
+Vue.prototype.getCookie = function (cookieName) {
+    if (document.cookie.length > 0) {
+        let start = document.cookie.indexOf(cookieName + "=")
+        if (start !== -1) {
+            start = start + cookieName.length + 1;
+            let end = document.cookie.indexOf(";", start);
+            if (end === -1) {
+                end = document.cookie.length;
+            }
+            return unescape(document.cookie.substring(start, end));
+        }
+    }
+    return ""
+};
 
 Vue.mixin({
     methods: {
@@ -52,14 +66,14 @@ Vue.mixin({
         dateFormatter(row, column) {
             return this.commonDateFormatter(row[column.property], "YYYY-MM-DD");
         },
-        getDictionaryMap(key,text) {
+        getDictionaryMap(key, text) {
             let map = local.getMap("dictionaryMap").get(key);
             let select = [];
             if (text) {
-                select.push({value:"",text:text});
+                select.push({value: "", text: text});
             }
-            map.forEach(function(t,v,o){
-                select.push({value: v,text:t});
+            map.forEach(function (t, v, o) {
+                select.push({value: v, text: t});
             });
             return select;
         }

@@ -6,7 +6,7 @@
                     <el-row type="flex" class="row-line" justify="center">
                         <el-col :span="2">
                             <div class="head-image">
-                                <el-avatar src="https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png"></el-avatar>
+                                <el-avatar><img src="../assets/image/login_logo.png"/></el-avatar>
                             </div>
                         </el-col>
                     </el-row>
@@ -34,7 +34,7 @@
                     </el-row>
                     <el-row type="flex" class="row-line" justify="center">
                         <el-col :span="22">
-                            <el-button type="primary" class="login-btn" round>登录</el-button>
+                            <el-button type="primary" class="login-btn" @click="doLogin" round>登录</el-button>
                         </el-col>
                     </el-row>
                     <el-row type="flex" class="row-line" justify="center">
@@ -83,6 +83,7 @@
 
 </style>
 <script>
+    import MD5 from 'js-md5';
     export default {
         data() {
             return {
@@ -104,6 +105,38 @@
                         let result = data.data;
                         this.user.captchaKey = result.captchaKey;
                         this.captchaImage = result.captchaImage;
+                    }
+                });
+            },
+            doLogin() {
+                if (!this.user.userName) {
+                    this.$message.error('用户名不能为空');
+                    return;
+                }
+                if (!this.user.password) {
+                    this.$message.error('密码不能为空');
+                    return;
+                }
+                if (!this.user.captcha) {
+                    this.$message.error('验证码不能为空');
+                    return;
+                }
+                let pwd = MD5(MD5(this.user.password)+this.user.captcha);
+                let param = {
+                    userName: this.user.userName,
+                    password: pwd,
+                    captcha: this.user.captcha,
+                    captchaKey: this.user.captchaKey,
+                };
+                this.$axios.post('/login', param).then(response => {
+                    let data = response.data;
+                    if (data.status === 0) {
+                        this.$local.set("menuData", data.data);
+                        this.$message.success(data.message);
+                        this.$router.push('/index');
+                    } else {
+                        this.$message.error(data.message);
+                        this.refreshCaptcha();
                     }
                 });
             }
