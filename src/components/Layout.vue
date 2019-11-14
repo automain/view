@@ -340,7 +340,7 @@
                     this.$local.setMap("dictionaryMap", dictionaryMap);
                 }
             });
-            this.menuData = this.$local.get("menuData");
+            this.menuData = this.$session.get("menuData");
         },
         computed: {
             hamburgerClass() {

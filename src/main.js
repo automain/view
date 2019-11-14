@@ -7,6 +7,7 @@ import App from '@/App.vue';
 import router from '@/router';
 import store from '@/store';
 import local from "@/local";
+import session from "@/session";
 import moment from 'moment';
 
 Vue.config.productionTip = false;
@@ -14,8 +15,9 @@ Vue.config.productionTip = false;
 Vue.use(ElementUI);
 
 Vue.prototype.$local = local;
+Vue.prototype.$session = session;
 Vue.prototype.$moment = moment;
-Vue.prototype.$axios = axios.create({
+let axiosObj = axios.create({
     baseURL: process.env.NODE_ENV === 'development' ? 'http://localhost:8081/web' : '/',
     method: 'post',
     timeout: 60000,
@@ -24,21 +26,16 @@ Vue.prototype.$axios = axios.create({
     withCredentials: true,
     headers: {'Content-Type': 'application/json;charset=UTF-8'}
 });
-Vue.prototype.getCookie = function (cookieName) {
-    if (document.cookie.length > 0) {
-        let start = document.cookie.indexOf(cookieName + "=")
-        if (start !== -1) {
-            start = start + cookieName.length + 1;
-            let end = document.cookie.indexOf(";", start);
-            if (end === -1) {
-                end = document.cookie.length;
-            }
-            return unescape(document.cookie.substring(start, end));
-        }
+axiosObj.interceptors.response.use(function (response) {
+    let authorization = response.headers.Authorization;
+    if (authorization) {
+        axiosObj.defaults.headers.common['Authorization'] = authorization;
     }
-    return ""
-};
-
+    return response;
+}, function (error) {
+    return Promise.reject(error);
+});
+Vue.prototype.$axios = axiosObj;
 Vue.mixin({
     methods: {
         download(response) {
