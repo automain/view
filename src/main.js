@@ -27,7 +27,8 @@ let axiosObj = axios.create({
     headers: {'Content-Type': 'application/json;charset=UTF-8'}
 });
 axiosObj.interceptors.response.use(function (response) {
-    let authorization = response.headers.Authorization;
+    let authorization = response.headers.authorization;
+    console.log(authorization);
     if (authorization) {
         axiosObj.defaults.headers.common['Authorization'] = authorization;
     }
@@ -64,7 +65,7 @@ Vue.mixin({
             return this.commonDateFormatter(row[column.property], "YYYY-MM-DD");
         },
         getDictionaryMap(key, text) {
-            let map = local.getMap("dictionaryMap").get(key);
+            let map = session.getMap("dictionaryMap").get(key);
             let select = [];
             if (text) {
                 select.push({value: "", text: text});
@@ -83,7 +84,7 @@ Vue.filter('dateTimeFilter', function (timestamp, format = 'YYYY-MM-DD HH:mm:ss'
     return moment(timestamp * 1000).format(format);
 });
 Vue.filter('dictionaryFilter', function (key, tableColumnKey) {
-    let dictionary = local.getMap("dictionaryMap").get(tableColumnKey);
+    let dictionary = session.getMap("dictionaryMap").get(tableColumnKey);
     return dictionary ? dictionary.get(key) : "";
 });
 new Vue({

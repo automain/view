@@ -291,8 +291,7 @@
                         this.breadcrumbItems[length - 1] = this.menuMap.get(key);
                     }
                 }
-                this.$local.set("lastRequestPath", index);
-                this.$local.set("breadcrumb", this.breadcrumbItems);
+                this.$session.set("breadcrumb", this.breadcrumbItems);
             },
             getMenuMap(map, menuData) {
                 for (let index in menuData) {
@@ -314,14 +313,8 @@
                 window.fullHeight = document.documentElement.clientHeight;
                 this.fullHeight = window.fullHeight;
             };
-            let lastRequestPath = this.$local.get("lastRequestPath");
-            let breadcrumb = this.$local.get("breadcrumb");
-            if (!lastRequestPath) {
-                lastRequestPath = "/main";
-                breadcrumb = ["首页"];
-            }
-            this.$router.push(lastRequestPath);
-            this.breadcrumbItems = breadcrumb;
+            this.$router.push("/main");
+            this.breadcrumbItems = ["首页"];
             this.$axios.post("/dictionaryAll").then(response => {
                 let data = response.data;
                 if (data.status === 0) {
@@ -337,7 +330,7 @@
                         dMap.set(dictionary.dictionaryKey, dictionary.dictionaryValue);
                         dictionaryMap.set(key, dMap);
                     }
-                    this.$local.setMap("dictionaryMap", dictionaryMap);
+                    this.$session.setMap("dictionaryMap", dictionaryMap);
                 }
             });
             this.menuData = this.$session.get("menuData");
