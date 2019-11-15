@@ -131,7 +131,8 @@
                 this.$axios.post('/login', param).then(response => {
                     let data = response.data;
                     if (data.status === 0) {
-                        this.$session.set("menuData", data.data);
+                        this.$session.set("menuData", data.data.menuData);
+                        this.$session.set("privilege", data.data.privilegeSet);
                         this.$message.success(data.message);
                         this.$router.push('/index');
                     } else {
