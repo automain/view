@@ -28,9 +28,11 @@ let axiosObj = axios.create({
 });
 axiosObj.interceptors.response.use(function (response) {
     let authorization = response.headers.authorization;
-    console.log(authorization);
     if (authorization) {
         axiosObj.defaults.headers.common['Authorization'] = authorization;
+    }
+    if (response.data.status === 403) {
+        router.push("/");
     }
     return response;
 }, function (error) {

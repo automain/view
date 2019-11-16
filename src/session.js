@@ -8,6 +8,9 @@ var session = {
     remove(key) {
         sessionStorage.removeItem(key);
     },
+    clear() {
+        sessionStorage.clear();
+    },
     setMap(key, value) {
         sessionStorage.setItem(key, JSON.stringify(value,function(k,v){
             let originalObject = this[k];

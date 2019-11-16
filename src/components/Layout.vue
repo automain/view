@@ -27,10 +27,9 @@
                     <div class="right-menu-container">
                         <el-dropdown class="info-drop-down">
                             <div class="head-img-container">
-                                <el-avatar size="medium" src="https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif?imageView2/1/w/80/h/80"
-                                ></el-avatar>
+                                <el-avatar size="medium" src="https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif?imageView2/1/w/80/h/80"></el-avatar>
                                 <div class="user-name">
-                                    王小虎
+                                    {{this.realName}}
                                     <i class="el-icon-arrow-down el-icon--right"></i>
                                 </div>
                             </div>
@@ -41,7 +40,7 @@
                         </el-dropdown>
                         <div class="logout-btn">
                             <el-tooltip class="item" effect="dark" content="退出登录" placement="bottom-end">
-                                <i class="el-icon-switch-button"></i>
+                                <i class="el-icon-switch-button" @click="handleLogout"></i>
                             </el-tooltip>
                         </div>
                     </div>
@@ -270,7 +269,8 @@
                 hamburgerTips: "隐藏菜单",
                 hamburgerIconClass: "el-icon-s-fold",
                 fullHeight: document.documentElement.clientHeight,
-                breadcrumbItems: []
+                breadcrumbItems: [],
+                realName: this.$session.get("realName"),
             };
         },
         methods: {
@@ -306,6 +306,22 @@
                     }
                 }
                 return map;
+            },
+            handleLogout() {
+                this.$confirm('确认退出当前账号?', '提示').then(() => {
+                    this.$axios.post("/logout").then(response => {
+                        let data = response.data;
+                        if (data.status === 0) {
+                            this.$session.clear();
+                            this.$axios.defaults.headers.common['Authorization'] = "";
+                            this.$router.push("/");
+                        } else {
+                            this.$message.error(data.message);
+                        }
+                    });
+                }).catch(() => {
+                    this.$message.info('取消退出');
+                });
             }
         },
         mounted() {

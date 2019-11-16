@@ -34,7 +34,7 @@
                     </el-row>
                     <el-row type="flex" class="row-line" justify="center">
                         <el-col :span="22">
-                            <el-button type="primary" class="login-btn" @click="doLogin" round>登录</el-button>
+                            <el-button type="primary" class="login-btn" @click="handleLogin" round>登录</el-button>
                         </el-col>
                     </el-row>
                     <el-row type="flex" class="row-line" justify="center">
@@ -99,7 +99,7 @@
         },
         methods: {
             refreshCaptcha() {
-                this.$axios.post('/getCaptcha').then(response => {
+                this.$axios.post("/getCaptcha").then(response => {
                     let data = response.data;
                     if (data.status === 0) {
                         let result = data.data;
@@ -108,7 +108,7 @@
                     }
                 });
             },
-            doLogin() {
+            handleLogin() {
                 if (!this.user.userName) {
                     this.$message.error('用户名不能为空');
                     return;
@@ -128,13 +128,14 @@
                     captcha: this.user.captcha,
                     captchaKey: this.user.captchaKey,
                 };
-                this.$axios.post('/login', param).then(response => {
+                this.$axios.post("/login", param).then(response => {
                     let data = response.data;
                     if (data.status === 0) {
                         this.$session.set("menuData", data.data.menuData);
-                        this.$session.set("privilege", data.data.privilegeSet);
+                        this.$session.set("privilege", data.data.privilege);
+                        this.$session.set("realName", data.data.realName);
                         this.$message.success(data.message);
-                        this.$router.push('/index');
+                        this.$router.push("/index");
                     } else {
                         this.$message.error(data.message);
                         this.refreshCaptcha();

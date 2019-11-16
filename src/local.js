@@ -8,6 +8,9 @@ var local = {
     remove(key) {
         localStorage.removeItem(key);
     },
+    clear() {
+        localStorage.clear();
+    },
     setMap(key, value) {
         localStorage.setItem(key, JSON.stringify(value,function(k,v){
             let originalObject = this[k];
