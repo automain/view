@@ -86,20 +86,24 @@
 <script>
     export default {
         data() {
-            let validatePassword = (rule, value, callback) => {
-                if (value === '') {
-                    callback(new Error('请输入密码'));
-                } else {
-                    if (this.sysUser.password2 !== '') {
-                        this.$refs.sysUserAdd.validateField('password2');
+            let validateUserName = (rule, value, callback) => {
+                this.$axios.post("/checkUserExist?userName=" + this.sysUser.userName).then(response => {
+                    let data = response.data;
+                    if (data.status === 0) {
+                        callback();
+                    } else {
+                        callback(new Error('用户名已存在'));
                     }
-                    callback();
+                });
+            };
+            let validatePassword = (rule, value, callback) => {
+                if (this.sysUser.password2 !== '') {
+                    this.$refs.sysUserAdd.validateField('password2');
                 }
+                callback();
             };
             let validatePassword2 = (rule, value, callback) => {
-                if (value === '') {
-                    callback(new Error('请再次输入密码'));
-                } else if (value !== this.sysUser.password) {
+                if (value !== this.sysUser.password) {
                     callback(new Error('两次输入密码不一致'));
                 } else {
                     callback();
@@ -130,12 +134,12 @@
                     email: null,
                 },
                 rules: {
-                    userName: [{required: true, message: '用户名不能为空'}],
+                    userName: [{required: true, message: '用户名不能为空'},{validator:validateUserName, trigger: 'blur'}],
                     realName: [{required: true, message: '真实姓名不能为空'}],
                     phone: [{required: true, message: '手机号不能为空'}],
                     email: [{required: true, message: '邮箱不能为空'}],
-                    password: [{validator: validatePassword, trigger: 'blur'}],
-                    password2: [{validator: validatePassword2, trigger: 'blur'}],
+                    password: [{required: true, message: '密码不能为空'},{validator: validatePassword, trigger: 'blur'}],
+                    password2: [{required: true, message: '确认密码不能为空'},{validator: validatePassword2, trigger: 'blur'}],
                 },
             }
         },
