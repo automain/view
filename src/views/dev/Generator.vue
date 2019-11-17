@@ -164,6 +164,7 @@
                     let data = response.data;
                     if (data.status === 0) {
                         this.tableList = data.data;
+                        this.clearSelect();
                     }
                 });
             },
@@ -185,8 +186,24 @@
                         }
                         this.columnList = columns;
                         this.columnNameList = columnNames;
+                        this.clearSelect();
                     }
                 });
+            },
+            clearSelect() {
+                this.addAllCheck = false;
+                this.addIndeterminate = false;
+                this.updateAllCheck = false;
+                this.updateIndeterminate = false;
+                this.detailAllCheck = false;
+                this.detailIndeterminate = false;
+                this.listAllCheck = false;
+                this.listIndeterminate = false;
+                this.generatorVO.addCheck = [];
+                this.generatorVO.updateCheck = [];
+                this.generatorVO.detailCheck = [];
+                this.generatorVO.listCheck = [];
+                this.generatorVO.sortCheck = [];
             }
         },
         mounted() {

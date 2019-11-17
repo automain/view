@@ -24,6 +24,7 @@
             <el-table-column prop="createTime" label="创建时间" width="160" :formatter="dateTimeFormatter"></el-table-column>
             <el-table-column prop="updateTime" label="更新时间" width="160" :formatter="dateTimeFormatter"></el-table-column>
             <el-table-column prop="userName" label="用户名"></el-table-column>
+            <el-table-column prop="realName" label="真实姓名"></el-table-column>
             <el-table-column prop="phone" label="手机号"></el-table-column>
             <el-table-column prop="email" label="邮箱"></el-table-column>
             <el-table-column fixed="right" label="操作" width="100">
@@ -35,16 +36,22 @@
         <el-pagination @size-change="handleSizeChange" @current-change="handlePageChange" :page-sizes="[10, 20, 50, 100]" :page-size="sysUserVO.size" layout="->, total, prev, pager, next, jumper, sizes" :total="pageBean.total"></el-pagination>
         <el-dialog title="添加" :visible.sync="addVisible" class="add-update-dialog">
             <el-form :model="sysUser" ref="sysUserAdd" :rules="rules" inline label-width="120px" size="mini">
-                <el-form-item label="用户名:">
+                <el-form-item label="用户名:" prop="userName">
                     <el-input v-model="sysUser.userName" autocomplete="off"></el-input>
                 </el-form-item>
-                <el-form-item label="密码MD5值:">
-                    <el-input v-model="sysUser.passwordMd5" autocomplete="off"></el-input>
+                <el-form-item label="密码" prop="password">
+                    <el-input v-model="sysUser.password" autocomplete="off" type="password"></el-input>
                 </el-form-item>
-                <el-form-item label="手机号:">
+                <el-form-item label="确认密码" prop="password2">
+                    <el-input v-model="sysUser.password2" autocomplete="off" type="password"></el-input>
+                </el-form-item>
+                <el-form-item label="真实姓名:" prop="realName">
+                    <el-input v-model="sysUser.realName" autocomplete="off"></el-input>
+                </el-form-item>
+                <el-form-item label="手机号:" prop="phone">
                     <el-input v-model="sysUser.phone" autocomplete="off"></el-input>
                 </el-form-item>
-                <el-form-item label="邮箱:">
+                <el-form-item label="邮箱:" prop="email">
                     <el-input v-model="sysUser.email" autocomplete="off"></el-input>
                 </el-form-item>
             </el-form>
@@ -55,13 +62,16 @@
         </el-dialog>
         <el-dialog title="编辑" :visible.sync="updateVisible" class="add-update-dialog">
             <el-form :model="sysUser" ref="sysUserUpdate" :rules="rules" inline label-width="120px" size="mini">
-                <el-form-item label="用户名:">
-                    <el-input v-model="sysUser.userName" autocomplete="off"></el-input>
+                <el-form-item label="用户名:" prop="userName">
+                    <el-input v-model="sysUser.userName" autocomplete="off" readonly></el-input>
                 </el-form-item>
-                <el-form-item label="手机号:">
+                <el-form-item label="真实姓名:" prop="realName">
+                    <el-input v-model="sysUser.realName" autocomplete="off"></el-input>
+                </el-form-item>
+                <el-form-item label="手机号:" prop="phone">
                     <el-input v-model="sysUser.phone" autocomplete="off"></el-input>
                 </el-form-item>
-                <el-form-item label="邮箱:">
+                <el-form-item label="邮箱:" prop="email">
                     <el-input v-model="sysUser.email" autocomplete="off"></el-input>
                 </el-form-item>
             </el-form>
@@ -76,6 +86,25 @@
 <script>
     export default {
         data() {
+            let validatePassword = (rule, value, callback) => {
+                if (value === '') {
+                    callback(new Error('请输入密码'));
+                } else {
+                    if (this.sysUser.password2 !== '') {
+                        this.$refs.sysUserAdd.validateField('password2');
+                    }
+                    callback();
+                }
+            };
+            let validatePassword2 = (rule, value, callback) => {
+                if (value === '') {
+                    callback(new Error('请再次输入密码'));
+                } else if (value !== this.sysUser.password) {
+                    callback(new Error('两次输入密码不一致'));
+                } else {
+                    callback();
+                }
+            };
             return {
                 addVisible: false,
                 updateVisible: false,
@@ -94,14 +123,19 @@
                 sysUser: {
                     gid: null,
                     userName: null,
-                    passwordMd5: null,
+                    password: null,
+                    password2: null,
+                    realName: null,
                     phone: null,
                     email: null,
                 },
                 rules: {
                     userName: [{required: true, message: '用户名不能为空'}],
+                    realName: [{required: true, message: '真实姓名不能为空'}],
                     phone: [{required: true, message: '手机号不能为空'}],
                     email: [{required: true, message: '邮箱不能为空'}],
+                    password: [{validator: validatePassword, trigger: 'blur'}],
+                    password2: [{validator: validatePassword2, trigger: 'blur'}],
                 },
             }
         },
@@ -204,7 +238,7 @@
         mounted() {
             this.handleSearch();
         },
-       computed: {
+        computed: {
             fullHeight() {
                 return this.$store.state.fullHeight - 140;
             }

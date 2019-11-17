@@ -38,13 +38,13 @@
         <el-pagination @size-change="handleSizeChange" @current-change="handlePageChange" :page-sizes="[10, 20, 50, 100]" :page-size="sysPrivilegeVO.size" layout="->, total, prev, pager, next, jumper, sizes" :total="pageBean.total"></el-pagination>
         <el-dialog title="添加" :visible.sync="addVisible" class="add-update-dialog">
             <el-form :model="sysPrivilege" ref="sysPrivilegeAdd" :rules="rules" inline label-width="120px" size="mini">
-                <el-form-item label="权限标识:">
+                <el-form-item label="权限标识:" prop="privilegeLabel">
                     <el-input v-model="sysPrivilege.privilegeLabel" autocomplete="off"></el-input>
                 </el-form-item>
-                <el-form-item label="权限名称:">
+                <el-form-item label="权限名称:" prop="privilegeName">
                     <el-input v-model="sysPrivilege.privilegeName" autocomplete="off"></el-input>
                 </el-form-item>
-                <el-form-item label="父级ID:">
+                <el-form-item label="父级ID:" prop="parentId">
                     <el-input v-model="sysPrivilege.parentId" autocomplete="off"></el-input>
                 </el-form-item>
             </el-form>
@@ -55,13 +55,13 @@
         </el-dialog>
         <el-dialog title="编辑" :visible.sync="updateVisible" class="add-update-dialog">
             <el-form :model="sysPrivilege" ref="sysPrivilegeUpdate" :rules="rules" inline label-width="120px" size="mini">
-                <el-form-item label="权限标识:">
+                <el-form-item label="权限标识:" prop="privilegeLabel">
                     <el-input v-model="sysPrivilege.privilegeLabel" autocomplete="off"></el-input>
                 </el-form-item>
-                <el-form-item label="权限名称:">
+                <el-form-item label="权限名称:" prop="privilegeName">
                     <el-input v-model="sysPrivilege.privilegeName" autocomplete="off"></el-input>
                 </el-form-item>
-                <el-form-item label="父级ID:">
+                <el-form-item label="父级ID:" prop="parentId">
                     <el-input v-model="sysPrivilege.parentId" autocomplete="off"></el-input>
                 </el-form-item>
             </el-form>
@@ -204,7 +204,7 @@
         mounted() {
             this.handleSearch();
         },
-       computed: {
+        computed: {
             fullHeight() {
                 return this.$store.state.fullHeight - 140;
             }

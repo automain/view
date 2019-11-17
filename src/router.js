@@ -17,8 +17,11 @@ export default new Router({
                 {path: '/main', name: '首页', component: () => import('@/views/system/Main')},
                 {path: '/dev/generator', name: '生成器', component: () => import('@/views/dev/Generator')},
                 {path: '/dev/test', name: '测试', component: () => import('@/views/dev/Test')},
-                {path: '/system/dictionary', name: '字典', component: () => import('@/views/system/Dictionary')},
-                {path: '/system/menu', name: '菜单', component: () => import('@/views/system/Menu')},
+                {path: '/system/dictionary', name: '字典管理', component: () => import('@/views/system/Dictionary')},
+                {path: '/system/menu', name: '菜单管理', component: () => import('@/views/system/Menu')},
+                {path: '/system/user', name: '人员管理', component: () => import('@/views/system/User')},
+                {path: '/system/role', name: '角色管理', component: () => import('@/views/system/Role')},
+                {path: '/system/privilege', name: '权限管理', component: () => import('@/views/system/Privilege')},
             ]
         },
 

@@ -34,10 +34,10 @@
         <el-pagination @size-change="handleSizeChange" @current-change="handlePageChange" :page-sizes="[10, 20, 50, 100]" :page-size="sysRoleVO.size" layout="->, total, prev, pager, next, jumper, sizes" :total="pageBean.total"></el-pagination>
         <el-dialog title="添加" :visible.sync="addVisible" class="add-update-dialog">
             <el-form :model="sysRole" ref="sysRoleAdd" :rules="rules" inline label-width="120px" size="mini">
-                <el-form-item label="角色名称:">
+                <el-form-item label="角色名称:" prop="roleName">
                     <el-input v-model="sysRole.roleName" autocomplete="off"></el-input>
                 </el-form-item>
-                <el-form-item label="角色标识:">
+                <el-form-item label="角色标识:" prop="roleLabel">
                     <el-input v-model="sysRole.roleLabel" autocomplete="off"></el-input>
                 </el-form-item>
             </el-form>
@@ -48,10 +48,10 @@
         </el-dialog>
         <el-dialog title="编辑" :visible.sync="updateVisible" class="add-update-dialog">
             <el-form :model="sysRole" ref="sysRoleUpdate" :rules="rules" inline label-width="120px" size="mini">
-                <el-form-item label="角色名称:">
+                <el-form-item label="角色名称:" prop="roleName">
                     <el-input v-model="sysRole.roleName" autocomplete="off"></el-input>
                 </el-form-item>
-                <el-form-item label="角色标识:">
+                <el-form-item label="角色标识:" prop="roleLabel">
                     <el-input v-model="sysRole.roleLabel" autocomplete="off"></el-input>
                 </el-form-item>
             </el-form>
@@ -191,7 +191,7 @@
         mounted() {
             this.handleSearch();
         },
-       computed: {
+        computed: {
             fullHeight() {
                 return this.$store.state.fullHeight - 140;
             }
