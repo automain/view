@@ -16,7 +16,7 @@
                     <el-input v-model="generatorVO.prefix" placeholder="请输入业务前缀"></el-input>
                 </el-form-item>
                 <el-form-item>
-                    <el-button type="primary" icon="el-icon-document-copy" @click="copy('#service-dao-container')" id="service-dao-container" :data-clipboard-text="serviceDaoContainer">复制serviceDaoContainer</el-button>
+                    <el-button type="primary" icon="el-icon-document-copy" @click="copy('#service-dao-container')" id="service-dao-container" :data-clipboard-text="serviceContainer">复制serviceContainer</el-button>
                 </el-form-item>
                 <el-form-item>
                     <el-button type="primary" icon="el-icon-document-copy" @click="copy('#bean')" id="bean" :data-clipboard-text="bean">复制bean</el-button>
@@ -88,7 +88,7 @@
                 tableList: [],
                 columnList: [],
                 columnNameList: [],
-                serviceDaoContainer: "",
+                serviceContainer: "",
                 bean: "",
                 generatorVO: {
                     databaseName: "",
@@ -173,7 +173,7 @@
                 this.$axios.post("/dev/columnList", this.generatorVO).then(response => {
                     let data = response.data;
                     if (data.status === 0) {
-                        this.serviceDaoContainer = data.data.serviceDaoContainer;
+                        this.serviceContainer = data.data.serviceContainer;
                         this.bean = data.data.bean;
                         let columns = [];
                         let columnNames = [];
