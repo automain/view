@@ -14,6 +14,11 @@
                 <el-form-item label="手机号:">
                     <el-input v-model="sysUserVO.phone" placeholder="手机号"></el-input>
                 </el-form-item>
+                <el-form-item label="角色:">
+                    <el-select v-model="sysUserVO.roleLabel" filterable placeholder="请选择角色">
+                        <el-option v-for="item in allRoleList" :key="item.roleLabel" :label="item.roleName" :value="item.roleLabel"></el-option>
+                    </el-select>
+                </el-form-item>
                 <el-form-item>
                     <el-button type="primary" icon="el-icon-search" @click="handleSearch()">查询</el-button>
                 </el-form-item>
@@ -27,8 +32,10 @@
             <el-table-column prop="realName" label="真实姓名"></el-table-column>
             <el-table-column prop="phone" label="手机号"></el-table-column>
             <el-table-column prop="email" label="邮箱"></el-table-column>
+            <el-table-column prop="roleName" label="角色"></el-table-column>
             <el-table-column fixed="right" label="操作" width="100">
                 <template slot-scope="scope">
+                    <el-button @click="handleSetRoleShow(scope.row)" type="text" size="small">分配角色</el-button>
                     <el-button @click="handleUpdateShow(scope.row)" type="text" size="small">编辑</el-button>
                 </template>
             </el-table-column>
@@ -80,6 +87,15 @@
                 <el-button type="primary" @click="handleAddUpdate('/userUpdate', 'sysUserUpdate')">确定</el-button>
             </div>
         </el-dialog>
+        <el-dialog title="分配角色" :visible.sync="setRoleVisible" class="add-update-dialog">
+            <el-select v-model="userRoleAdd" filterable placeholder="请选择角色">
+                <el-option v-for="item in allRoleList" :key="item.roleLabel" :label="item.roleName" :value="item.roleLabel"></el-option>
+            </el-select>
+            <div slot="footer" class="dialog-footer">
+                <el-button @click="setRoleVisible = false">取消</el-button>
+                <el-button type="primary" @click="handleSetRole">确定</el-button>
+            </div>
+        </el-dialog>
     </div>
 </template>
 
@@ -112,12 +128,16 @@
             return {
                 addVisible: false,
                 updateVisible: false,
+                setRoleVisible: false,
+                allRoleList: null,
+                userRoleAdd: null,
                 sysUserVO: {
                     page: 1,
                     size: 10,
                     gidList: [],
                     userName: null,
                     phone: null,
+                    roleLabel: null,
                 },
                 pageBean: {
                     page: 1,
@@ -237,10 +257,35 @@
                 } else {
                     this.$message.warning("请选择要删除的数据");
                 }
+            },
+            handleSetRoleShow(row) {
+                this.sysUser.gid = row.gid;
+                this.userRoleAdd = null;
+                this.setRoleVisible = true;
+            },
+            handleSetRole() {
+                if (!this.userRoleAdd) {
+                    this.$message.error("清选择角色");
+                } else {
+                    this.$axios.post("/userSetRole?gid=" + this.sysUser.gid + "&roleLabel=" + this.userRoleAdd).then(response => {
+                        let data = response.data;
+                        if (data.status === 0) {
+                            this.$message.success("设置成功");
+                        } else {
+                            this.$message.error(data.message);
+                        }
+                    });
+                }
             }
         },
         mounted() {
             this.handleSearch();
+            this.$axios.post("/allRoleList").then(response => {
+                let data = response.data;
+                if (data.status === 0) {
+                    this.allRoleList = data.data;
+                }
+            });
         },
         computed: {
             fullHeight() {

@@ -5,9 +5,6 @@
                 <el-form-item>
                     <el-button type="success" icon="el-icon-plus" @click="handleAddShow">添加</el-button>
                 </el-form-item>
-                <el-form-item>
-                    <el-button type="warning" icon="el-icon-delete" @click="handleDelete">删除</el-button>
-                </el-form-item>
                 <el-form-item label="角色名称:">
                     <el-input v-model="sysRoleVO.roleName" placeholder="角色名称"></el-input>
                 </el-form-item>
@@ -19,8 +16,7 @@
                 </el-form-item>
             </el-form>
         </el-card>
-        <el-table ref="multipleTable" :data="pageBean.data" tooltip-effect="dark" :height="fullHeight" @selection-change="selectToDelete" @filter-change="handleFilterChange">
-            <el-table-column type="selection" width="42" fixed="left"></el-table-column>
+        <el-table ref="multipleTable" :data="pageBean.data" tooltip-effect="dark" :height="fullHeight" @filter-change="handleFilterChange">
             <el-table-column prop="createTime" label="创建时间" width="160" :formatter="dateTimeFormatter"></el-table-column>
             <el-table-column prop="updateTime" label="更新时间" width="160" :formatter="dateTimeFormatter"></el-table-column>
             <el-table-column prop="roleName" label="角色名称"></el-table-column>
@@ -52,7 +48,7 @@
                     <el-input v-model="sysRole.roleName" autocomplete="off"></el-input>
                 </el-form-item>
                 <el-form-item label="角色标识:" prop="roleLabel">
-                    <el-input v-model="sysRole.roleLabel" autocomplete="off"></el-input>
+                    <el-input v-model="sysRole.roleLabel" autocomplete="off" readonly></el-input>
                 </el-form-item>
             </el-form>
             <div slot="footer" class="dialog-footer">
@@ -66,13 +62,22 @@
 <script>
     export default {
         data() {
+            let validateRoleLabel = (rule, value, callback) => {
+                this.$axios.post("/checkRoleExist?roleLabel=" + this.sysRole.roleLabel).then(response => {
+                    let data = response.data;
+                    if (data.status === 0) {
+                        callback();
+                    } else {
+                        callback(new Error('角色标识已存在'));
+                    }
+                });
+            };
             return {
                 addVisible: false,
                 updateVisible: false,
                 sysRoleVO: {
                     page: 1,
                     size: 10,
-                    idList: [],
                     roleName: null,
                     roleLabel: null,
                 },
@@ -88,7 +93,7 @@
                 },
                 rules: {
                     roleName: [{required: true, message: '角色名称不能为空'}],
-                    roleLabel: [{required: true, message: '角色标识不能为空'}],
+                    roleLabel: [{required: true, message: '角色标识不能为空'},{validator:validateRoleLabel, trigger: 'blur'}],
                 },
             }
         },
@@ -161,32 +166,6 @@
                     }
                 });
             },
-            selectToDelete(val) {
-                let idList = [];
-                for (let i = 0, size = val.length; i < size; i++) {
-                    idList.push(val[i].id);
-                }
-                this.sysRoleVO.idList = idList;
-            },
-            handleDelete() {
-                if (this.sysRoleVO.idList.length > 0) {
-                    this.$confirm("确定删除选中的数据?", "提示", {type: "warning"}).then(() => {
-                        this.$axios.post("/roleDelete", this.sysRoleVO).then(response => {
-                            let data = response.data;
-                            if (data.status === 0) {
-                                this.$message.success("操作成功");
-                                this.handleSearch();
-                            } else {
-                                this.$message.error("操作失败");
-                            }
-                        });
-                    }).catch(() => {
-                        this.$message.info("取消删除");
-                    });
-                } else {
-                    this.$message.warning("请选择要删除的数据");
-                }
-            }
         },
         mounted() {
             this.handleSearch();

@@ -5,9 +5,6 @@
                 <el-form-item>
                     <el-button type="success" icon="el-icon-plus" @click="handleAddShow">添加</el-button>
                 </el-form-item>
-                <el-form-item>
-                    <el-button type="warning" icon="el-icon-delete" @click="handleDelete">删除</el-button>
-                </el-form-item>
                 <el-form-item label="菜单名称:">
                     <el-input v-model="sysMenuVO.menuName" placeholder="菜单名称"></el-input>
                 </el-form-item>
@@ -22,8 +19,7 @@
                 </el-form-item>
             </el-form>
         </el-card>
-        <el-table ref="multipleTable" :data="pageBean.data" tooltip-effect="dark" :height="fullHeight" @selection-change="selectToDelete"  @sort-change="handleSort" @filter-change="handleFilterChange">
-            <el-table-column type="selection" width="42" fixed="left"></el-table-column>
+        <el-table ref="multipleTable" :data="pageBean.data" tooltip-effect="dark" :height="fullHeight" @sort-change="handleSort" @filter-change="handleFilterChange">
             <el-table-column prop="createTime" label="创建时间" width="160" :formatter="dateTimeFormatter"></el-table-column>
             <el-table-column prop="updateTime" label="更新时间" width="160" :formatter="dateTimeFormatter"></el-table-column>
             <el-table-column prop="menuPath" label="菜单路径"></el-table-column>
@@ -106,7 +102,6 @@
                     size: 10,
                     sortLabel: null,
                     sortOrder: null,
-                    idList: [],
                     menuName: null,
                     parentId: null,
                 },
@@ -209,32 +204,6 @@
                         return false;
                     }
                 });
-            },
-            selectToDelete(val) {
-                let idList = [];
-                for (let i = 0, size = val.length; i < size; i++) {
-                    idList.push(val[i].id);
-                }
-                this.sysMenuVO.idList = idList;
-            },
-            handleDelete() {
-                if (this.sysMenuVO.idList.length > 0) {
-                    this.$confirm("确定删除选中的数据?", "提示", {type: "warning"}).then(() => {
-                        this.$axios.post("/menuDelete", this.sysMenuVO).then(response => {
-                            let data = response.data;
-                            if (data.status === 0) {
-                                this.$message.success("操作成功");
-                                this.handleSearch();
-                            } else {
-                                this.$message.error("操作失败");
-                            }
-                        });
-                    }).catch(() => {
-                        this.$message.info("取消删除");
-                    });
-                } else {
-                    this.$message.warning("请选择要删除的数据");
-                }
             },
             formatParentMenu(row, column) {
                 let parentId = row.parentId;
