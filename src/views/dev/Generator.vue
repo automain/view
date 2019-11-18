@@ -165,6 +165,7 @@
                     if (data.status === 0) {
                         this.tableList = data.data;
                         this.clearSelect();
+                        this.tableName = "";
                     }
                 });
             },
