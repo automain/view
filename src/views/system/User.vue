@@ -33,6 +33,11 @@
             <el-table-column prop="phone" label="手机号"></el-table-column>
             <el-table-column prop="email" label="邮箱"></el-table-column>
             <el-table-column prop="roleName" label="角色"></el-table-column>
+            <el-table-column prop="headImg" label="头像">
+                <template slot-scope="scope">
+                    <el-avatar size="small" :src="scope.row.headImg"></el-avatar>
+                </template>
+            </el-table-column>
             <el-table-column fixed="right" label="操作" width="100">
                 <template slot-scope="scope">
                     <el-button @click="handleSetRoleShow(scope.row)" type="text" size="small">分配角色</el-button>
@@ -152,6 +157,7 @@
                     realName: null,
                     phone: null,
                     email: null,
+                    headImgGid: null,
                 },
                 rules: {
                     userName: [{required: true, message: '用户名不能为空'},{validator:validateUserName, trigger: 'blur'}],
