@@ -22,6 +22,9 @@ export default new Router({
                 {path: '/system/user', name: '人员管理', component: () => import('@/views/system/User')},
                 {path: '/system/role', name: '角色管理', component: () => import('@/views/system/Role')},
                 {path: '/system/privilege', name: '权限管理', component: () => import('@/views/system/Privilege')},
+                {path: '/system/schedule', name: '任务管理', component: () => import('@/views/system/Schedule')},
+                {path: '/system/config', name: '配置管理', component: () => import('@/views/system/Config')},
+                {path: '/system/file', name: '文件管理', component: () => import('@/views/system/File')},
             ]
         },
 
