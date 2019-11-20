@@ -12,17 +12,17 @@
                     </el-row>
                     <el-row type="flex" class="row-line" justify="center">
                         <el-col :span="22">
-                            <el-input placeholder="用户名" v-model="user.userName" prefix-icon="el-icon-user" clearable></el-input>
+                            <el-input placeholder="用户名" v-model="user.userName" prefix-icon="el-icon-user" clearable @keyup.enter.native="handleLogin"></el-input>
                         </el-col>
                     </el-row>
                     <el-row type="flex" class="row-line" justify="center">
                         <el-col :span="22">
-                            <el-input placeholder="密码" v-model="user.password" prefix-icon="el-icon-key" show-password></el-input>
+                            <el-input placeholder="密码" v-model="user.password" prefix-icon="el-icon-key" show-password @keyup.enter.native="handleLogin"></el-input>
                         </el-col>
                     </el-row>
                     <el-row type="flex" class="row-line" justify="center">
                         <el-col :span="14">
-                            <el-input placeholder="验证码" v-model="user.captcha" clearable></el-input>
+                            <el-input placeholder="验证码" v-model="user.captcha" clearable @keyup.enter.native="handleLogin"></el-input>
                         </el-col>
                         <el-col :span="7" :offset="1">
                             <el-image :src="'data:image/png;base64,' + captchaImage" @click="refreshCaptcha" fit="fill" alt="验证码" class="captcha-img">

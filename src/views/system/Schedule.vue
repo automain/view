@@ -17,7 +17,7 @@
             <el-table-column prop="scheduleName" label="任务名称"></el-table-column>
             <el-table-column prop="scheduleUrl" label="任务地址" show-overflow-tooltip></el-table-column>
             <el-table-column prop="startExecuteTime" label="开始执行时间" width="160" :formatter="dateTimeFormatter"></el-table-column>
-            <el-table-column prop="period" label="间隔时间(秒)" width="160" :formatter="dateTimeFormatter"></el-table-column>
+            <el-table-column prop="period" label="间隔时间(秒)"></el-table-column>
             <el-table-column prop="lastExecuteTime" label="上次执行时间" width="160" :formatter="dateTimeFormatter"></el-table-column>
             <el-table-column fixed="right" label="操作" width="100">
                 <template slot-scope="scope">
@@ -38,7 +38,7 @@
                     <el-date-picker v-model="startExecuteTimePicker" type="datetime" placeholder="请选择开始执行时间" value-format="timestamp" @change="function(val){sysSchedule.startExecuteTime = val / 1000}"></el-date-picker>
                 </el-form-item>
                 <el-form-item label="间隔时间(秒):" prop="period">
-                    <el-date-picker v-model="periodPicker" type="datetime" placeholder="请选择间隔时间(秒)" value-format="timestamp" @change="function(val){sysSchedule.period = val / 1000}"></el-date-picker>
+                    <el-input v-model.number="sysSchedule.period" autocomplete="off"></el-input>
                 </el-form-item>
             </el-form>
             <div slot="footer" class="dialog-footer">
@@ -58,7 +58,7 @@
                     <el-date-picker v-model="startExecuteTimePicker" type="datetime" placeholder="请选择开始执行时间" value-format="timestamp" @change="function(val){sysSchedule.startExecuteTime = val / 1000}"></el-date-picker>
                 </el-form-item>
                 <el-form-item label="间隔时间(秒):" prop="period">
-                    <el-date-picker v-model="periodPicker" type="datetime" placeholder="请选择间隔时间(秒)" value-format="timestamp" @change="function(val){sysSchedule.period = val / 1000}"></el-date-picker>
+                    <el-input v-model.number="sysSchedule.period" autocomplete="off"></el-input>
                 </el-form-item>
             </el-form>
             <div slot="footer" class="dialog-footer">
@@ -76,7 +76,6 @@
                 addVisible: false,
                 updateVisible: false,
                 startExecuteTimePicker: null,
-                periodPicker: null,
                 sysScheduleVO: {
                     page: 1,
                     size: 10,
@@ -136,7 +135,6 @@
             handleUpdateShow(row) {
                 this.handleSetProperties(row);
                 this.startExecuteTimePicker = row.startExecuteTime * 1000;
-                this.periodPicker = row.period * 1000;
                 this.updateVisible = true;
             },
             handleAddShow() {
@@ -145,7 +143,6 @@
                     this.$refs['sysScheduleAdd'].resetFields();
                 }
                 this.startExecuteTimePicker = null;
-                this.periodPicker = null;
                 this.addVisible = true;
             },
             handleClear() {

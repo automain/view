@@ -26,10 +26,16 @@ let axiosObj = axios.create({
     withCredentials: true,
     headers: {'Content-Type': 'application/json;charset=UTF-8'}
 });
+axiosObj.interceptors.request.use(function (config) {
+    config.headers['Authorization'] = session.get('Authorization');
+    return config;
+}, function (error) {
+    return Promise.reject(error);
+});
 axiosObj.interceptors.response.use(function (response) {
     let authorization = response.headers.authorization;
     if (authorization) {
-        axiosObj.defaults.headers.common['Authorization'] = authorization;
+        session.set('Authorization', authorization);
     }
     if (response.data.status === 403) {
         router.push("/");

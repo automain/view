@@ -12,6 +12,7 @@
         </el-card>
         <el-table ref="multipleTable" :data="pageBean.data" tooltip-effect="dark" :height="fullHeight"  @filter-change="handleFilterChange">
             <el-table-column prop="createTime" label="创建时间" width="160" :formatter="dateTimeFormatter"></el-table-column>
+            <el-table-column prop="updateTime" label="更新时间" width="160" :formatter="dateTimeFormatter"></el-table-column>
             <el-table-column prop="fileExtension" label="文件扩展名"></el-table-column>
             <el-table-column prop="filePath" label="文件相对路径"></el-table-column>
             <el-table-column prop="fileSize" label="文件大小(字节)"></el-table-column>

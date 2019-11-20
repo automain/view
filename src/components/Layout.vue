@@ -291,6 +291,7 @@
                         this.breadcrumbItems[length - 1] = this.menuMap.get(key);
                     }
                 }
+                this.$session.set("lastRequestPath", index);
                 this.$session.set("breadcrumb", this.breadcrumbItems);
             },
             getMenuMap(map, menuData) {
@@ -329,8 +330,14 @@
                 window.fullHeight = document.documentElement.clientHeight;
                 this.fullHeight = window.fullHeight;
             };
-            this.$router.push("/main");
-            this.breadcrumbItems = ["首页"];
+            let lastRequestPath = this.$session.get("lastRequestPath");
+            let breadcrumb = this.$session.get("breadcrumb");
+            if (!lastRequestPath) {
+                lastRequestPath = "/main";
+                breadcrumb = ["首页"];
+            }
+            this.$router.push(lastRequestPath);
+            this.breadcrumbItems = breadcrumb;
             this.$axios.post("/dictionaryAll").then(response => {
                 let data = response.data;
                 if (data.status === 0) {
