@@ -35,7 +35,7 @@
             <el-table-column prop="roleName" label="角色"></el-table-column>
             <el-table-column prop="headImg" label="头像">
                 <template slot-scope="scope">
-                    <el-avatar size="small" :src="scope.row.headImg"></el-avatar>
+                    <el-avatar size="small" :src="baseUrl + scope.row.headImg"></el-avatar>
                 </template>
             </el-table-column>
             <el-table-column fixed="right" label="操作" width="100">
@@ -71,11 +71,11 @@
                     </el-select>
                 </el-form-item>
                 <el-form-item label="头像:" prop="headImgGid">
-                    <el-upload class="avatar-uploader" action="/upload"
+                    <el-upload class="avatar-uploader" :action="baseUrl + '/upload'"
                             :show-file-list="false"
                             :on-success="handleAvatarSuccess"
                             :before-upload="beforeAvatarUpload">
-                        <img v-if="sysUser.headImg" :src="sysUser.headImg" class="avatar">
+                        <img v-if="sysUser.headImg" :src="baseUrl + sysUser.headImg" class="avatar">
                         <i v-else class="el-icon-plus avatar-uploader-icon"></i>
                     </el-upload>
                 </el-form-item>
@@ -105,11 +105,11 @@
                     </el-select>
                 </el-form-item>
                 <el-form-item label="头像:" prop="headImgGid">
-                    <el-upload class="avatar-uploader" action="/upload"
+                    <el-upload class="avatar-uploader" :action="baseUrl + '/upload'"
                                :show-file-list="false"
                                :on-success="handleAvatarSuccess"
                                :before-upload="beforeAvatarUpload">
-                        <img v-if="sysUser.headImg" :src="sysUser.headImg" class="avatar">
+                        <img v-if="sysUser.headImg" :src="baseUrl + sysUser.headImg" class="avatar">
                         <i v-else class="el-icon-plus avatar-uploader-icon"></i>
                     </el-upload>
                 </el-form-item>
@@ -126,7 +126,7 @@
     export default {
         data() {
             let validateUserName = (rule, value, callback) => {
-                this.$axios.post("/checkUserExist?userName=" + this.sysUser.userName).then(response => {
+                this.$axios.post("/checkUserExist?userName=" + this.sysUser.userName + "&gid=" + this.sysUser.gid).then(response => {
                     let data = response.data;
                     if (data.status === 0) {
                         callback();
@@ -152,6 +152,7 @@
                 addVisible: false,
                 updateVisible: false,
                 allRoleList: null,
+                baseUrl: this.$axios.defaults.baseURL,
                 sysUserVO: {
                     page: 1,
                     size: 10,
@@ -284,12 +285,10 @@
                 }
             },
             handleAvatarSuccess(res, file) {
-                console.log(res);
-                console.log(file);
+                this.sysUser.headImgGid = res.data.uploadFileGid;
                 this.sysUser.headImg = URL.createObjectURL(file.raw);
             },
             beforeAvatarUpload(file) {
-                console.log(file);
                 const isJPG = file.type === 'image/jpeg';
                 const isLt2M = file.size / 1024 / 1024 < 2;
 

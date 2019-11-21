@@ -18,7 +18,7 @@ Vue.prototype.$local = local;
 Vue.prototype.$session = session;
 Vue.prototype.$moment = moment;
 let axiosObj = axios.create({
-    baseURL: process.env.NODE_ENV === 'development' ? 'http://localhost:8081/web' : '/',
+    baseURL: process.env.NODE_ENV === 'development' ? 'http://localhost:8081/web' : '',
     method: 'post',
     timeout: 60000,
     maxContentLength: Infinity,
