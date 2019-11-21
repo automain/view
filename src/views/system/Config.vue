@@ -85,7 +85,7 @@
                     data: [],
                 },
                 sysConfig: {
-                    gid: null,
+                    id: null,
                     configKey: null,
                     configValue: null,
                     configRemark: null,

@@ -21,8 +21,10 @@
             <el-table-column prop="updateTime" label="更新时间" width="160" :formatter="dateTimeFormatter"></el-table-column>
             <el-table-column prop="roleName" label="角色名称"></el-table-column>
             <el-table-column prop="roleLabel" label="角色标识"></el-table-column>
-            <el-table-column fixed="right" label="操作" width="100">
+            <el-table-column fixed="right" label="操作" width="300">
                 <template slot-scope="scope">
+                    <el-button @click="handlePrivilegeShow(scope.row)" type="text" size="small">分配权限</el-button>
+                    <el-button @click="handleMenuShow(scope.row)" type="text" size="small">分配菜单</el-button>
                     <el-button @click="handleUpdateShow(scope.row)" type="text" size="small">编辑</el-button>
                 </template>
             </el-table-column>
@@ -56,6 +58,13 @@
                 <el-button type="primary" @click="handleAddUpdate('/roleUpdate', 'sysRoleUpdate')">确定</el-button>
             </div>
         </el-dialog>
+        <el-dialog title="分配权限" :visible.sync="privilegeVisible" class="add-update-dialog">
+            <el-tree :data="privilegeTreeList" show-checkbox default-expand-all node-key="id" ref="privilegeTree" highlight-current></el-tree>
+            <div slot="footer" class="dialog-footer">
+                <el-button @click="privilegeVisible = false">取消</el-button>
+                <el-button type="primary" @click="handleSetPrivilege">确定</el-button>
+            </div>
+        </el-dialog>
     </div>
 </template>
 
@@ -75,6 +84,8 @@
             return {
                 addVisible: false,
                 updateVisible: false,
+                privilegeVisible: false,
+                menuVisible: false,
                 sysRoleVO: {
                     page: 1,
                     size: 10,
@@ -87,10 +98,12 @@
                     data: [],
                 },
                 sysRole: {
-                    gid: null,
+                    id: null,
                     roleName: null,
                     roleLabel: null,
                 },
+                privilegeTreeList: [],
+                menuTreeList: [],
                 rules: {
                     roleName: [{required: true, message: '角色名称不能为空'}],
                     roleLabel: [{required: true, message: '角色标识不能为空'},{validator:validateRoleLabel, trigger: 'blur'}],
@@ -166,6 +179,27 @@
                     }
                 });
             },
+            handlePrivilegeShow(row) {
+                this.$axios.post('/getPrivilegeTree').then(response => {
+                    let data = response.data;
+                    if (data.status === 0) {
+                        this.privilegeTreeList = data.data;
+                    }
+                });
+                this.privilegeVisible = true;
+            },
+            handleMenuShow(row) {
+                this.$axios.post('/getMenuTree').then(response => {
+                    let data = response.data;
+                    if (data.status === 0) {
+                        this.menuTreeList = data.data;
+                    }
+                });
+                this.menuVisible = true;
+            },
+            handleSetPrivilege() {
+
+            }
         },
         mounted() {
             this.handleSearch();

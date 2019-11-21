@@ -9,7 +9,7 @@
                     <el-input v-model="sysMenuVO.menuName" placeholder="菜单名称"></el-input>
                 </el-form-item>
                 <el-form-item label="父级:">
-                    <el-select v-model="sysMenuVO.parentId" placeholder="父级">
+                    <el-select v-model="sysMenuVO.parentId" filterable placeholder="父级">
                         <el-option label="全部" value=""></el-option>
                         <el-option v-for="(item,key) in allValidMenuList" :key="key" :value="item.id" :label="item.name"></el-option>
                     </el-select>
@@ -50,7 +50,7 @@
                     <el-input v-model="sysMenu.menuIcon" autocomplete="off"></el-input>
                 </el-form-item>
                 <el-form-item label="父级:" prop="parentId">
-                    <el-select v-model="sysMenu.parentId" placeholder="父级">
+                    <el-select v-model="sysMenu.parentId" filterable placeholder="父级">
                         <el-option v-for="(item,key) in allValidMenuList" :key="key" :value="item.id" :label="item.name"></el-option>
                     </el-select>
                 </el-form-item>
@@ -75,7 +75,7 @@
                     <el-input v-model="sysMenu.menuIcon" autocomplete="off"></el-input>
                 </el-form-item>
                 <el-form-item label="父级ID:" prop="parentId">
-                    <el-select v-model="sysMenu.parentId" placeholder="父级">
+                    <el-select v-model="sysMenu.parentId" filterable placeholder="父级">
                         <el-option v-for="(item,key) in allValidMenuList" :key="key" :value="item.id" :label="item.name"></el-option>
                     </el-select>
                 </el-form-item>
@@ -111,7 +111,7 @@
                     data: [],
                 },
                 sysMenu: {
-                    gid: null,
+                    id: null,
                     menuPath: null,
                     menuName: null,
                     menuIcon: null,

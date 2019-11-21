@@ -114,7 +114,7 @@
                     data: [],
                 },
                 sysDictionary: {
-                    gid: null,
+                    id: null,
                     tableName: null,
                     columnName: null,
                     dictionaryKey: null,

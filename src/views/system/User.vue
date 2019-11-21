@@ -40,7 +40,6 @@
             </el-table-column>
             <el-table-column fixed="right" label="操作" width="100">
                 <template slot-scope="scope">
-                    <el-button @click="handleSetRoleShow(scope.row)" type="text" size="small">分配角色</el-button>
                     <el-button @click="handleUpdateShow(scope.row)" type="text" size="small">编辑</el-button>
                 </template>
             </el-table-column>
@@ -66,6 +65,20 @@
                 <el-form-item label="邮箱:" prop="email">
                     <el-input v-model="sysUser.email" autocomplete="off"></el-input>
                 </el-form-item>
+                <el-form-item label="角色:" prop="userRoleList">
+                    <el-select v-model="sysUser.userRoleList" multiple clearable placeholder="请选择角色">
+                        <el-option v-for="item in allRoleList" :key="item.roleLabel" :label="item.roleName" :value="item.roleLabel"></el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="头像:" prop="headImgGid">
+                    <el-upload class="avatar-uploader" action="/upload"
+                            :show-file-list="false"
+                            :on-success="handleAvatarSuccess"
+                            :before-upload="beforeAvatarUpload">
+                        <img v-if="sysUser.headImg" :src="sysUser.headImg" class="avatar">
+                        <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+                    </el-upload>
+                </el-form-item>
             </el-form>
             <div slot="footer" class="dialog-footer">
                 <el-button @click="addVisible = false">取消</el-button>
@@ -86,19 +99,24 @@
                 <el-form-item label="邮箱:" prop="email">
                     <el-input v-model="sysUser.email" autocomplete="off"></el-input>
                 </el-form-item>
+                <el-form-item label="角色:" prop="userRoleList">
+                    <el-select v-model="sysUser.userRoleList" multiple clearable placeholder="请选择角色">
+                        <el-option v-for="item in allRoleList" :key="item.roleLabel" :label="item.roleName" :value="item.roleLabel"></el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="头像:" prop="headImgGid">
+                    <el-upload class="avatar-uploader" action="/upload"
+                               :show-file-list="false"
+                               :on-success="handleAvatarSuccess"
+                               :before-upload="beforeAvatarUpload">
+                        <img v-if="sysUser.headImg" :src="sysUser.headImg" class="avatar">
+                        <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+                    </el-upload>
+                </el-form-item>
             </el-form>
             <div slot="footer" class="dialog-footer">
                 <el-button @click="updateVisible = false">取消</el-button>
                 <el-button type="primary" @click="handleAddUpdate('/userUpdate', 'sysUserUpdate')">确定</el-button>
-            </div>
-        </el-dialog>
-        <el-dialog title="分配角色" :visible.sync="setRoleVisible" class="add-update-dialog">
-            <el-select v-model="userRoleAdd" filterable placeholder="请选择角色">
-                <el-option v-for="item in allRoleList" :key="item.roleLabel" :label="item.roleName" :value="item.roleLabel"></el-option>
-            </el-select>
-            <div slot="footer" class="dialog-footer">
-                <el-button @click="setRoleVisible = false">取消</el-button>
-                <el-button type="primary" @click="handleSetRole">确定</el-button>
             </div>
         </el-dialog>
     </div>
@@ -133,9 +151,7 @@
             return {
                 addVisible: false,
                 updateVisible: false,
-                setRoleVisible: false,
                 allRoleList: null,
-                userRoleAdd: null,
                 sysUserVO: {
                     page: 1,
                     size: 10,
@@ -158,6 +174,8 @@
                     phone: null,
                     email: null,
                     headImgGid: null,
+                    headImg: null,
+                    userRoleList: [],
                 },
                 rules: {
                     userName: [{required: true, message: '用户名不能为空'},{validator:validateUserName, trigger: 'blur'}],
@@ -166,6 +184,7 @@
                     email: [{required: true, message: '邮箱不能为空'}],
                     password: [{required: true, message: '密码不能为空'},{validator: validatePassword, trigger: 'blur'}],
                     password2: [{required: true, message: '确认密码不能为空'},{validator: validatePassword2, trigger: 'blur'}],
+                    userRoleList: [{required: true, message: '角色不能为空'}],
                 },
             }
         },
@@ -264,24 +283,23 @@
                     this.$message.warning("请选择要删除的数据");
                 }
             },
-            handleSetRoleShow(row) {
-                this.sysUser.gid = row.gid;
-                this.userRoleAdd = null;
-                this.setRoleVisible = true;
+            handleAvatarSuccess(res, file) {
+                console.log(res);
+                console.log(file);
+                this.sysUser.headImg = URL.createObjectURL(file.raw);
             },
-            handleSetRole() {
-                if (!this.userRoleAdd) {
-                    this.$message.error("清选择角色");
-                } else {
-                    this.$axios.post("/userSetRole?gid=" + this.sysUser.gid + "&roleLabel=" + this.userRoleAdd).then(response => {
-                        let data = response.data;
-                        if (data.status === 0) {
-                            this.$message.success("设置成功");
-                        } else {
-                            this.$message.error(data.message);
-                        }
-                    });
+            beforeAvatarUpload(file) {
+                console.log(file);
+                const isJPG = file.type === 'image/jpeg';
+                const isLt2M = file.size / 1024 / 1024 < 2;
+
+                if (!isJPG) {
+                    this.$message.error('上传头像图片只能是 JPG 格式!');
                 }
+                if (!isLt2M) {
+                    this.$message.error('上传头像图片大小不能超过 2MB!');
+                }
+                return isJPG && isLt2M;
             }
         },
         mounted() {

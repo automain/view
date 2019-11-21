@@ -11,8 +11,11 @@
                 <el-form-item label="权限名称:">
                     <el-input v-model="sysPrivilegeVO.privilegeName" placeholder="权限名称"></el-input>
                 </el-form-item>
-                <el-form-item label="父级ID:">
-                    <el-input v-model="sysPrivilegeVO.parentId" placeholder="父级ID"></el-input>
+                <el-form-item label="父级:">
+                    <el-select v-model="sysPrivilegeVO.parentId" filterable placeholder="父级">
+                        <el-option label="全部" value=""></el-option>
+                        <el-option v-for="(item,key) in allPrivilegeList" :key="key" :value="item.id" :label="item.name"></el-option>
+                    </el-select>
                 </el-form-item>
                 <el-form-item>
                     <el-button type="primary" icon="el-icon-search" @click="handleSearch()">查询</el-button>
@@ -24,7 +27,7 @@
             <el-table-column prop="updateTime" label="更新时间" width="160" :formatter="dateTimeFormatter"></el-table-column>
             <el-table-column prop="privilegeLabel" label="权限标识"></el-table-column>
             <el-table-column prop="privilegeName" label="权限名称"></el-table-column>
-            <el-table-column prop="parentId" label="父级ID"></el-table-column>
+            <el-table-column prop="parentId" label="父级" :formatter="formatParentPrivilege"></el-table-column>
             <el-table-column fixed="right" label="操作" width="100">
                 <template slot-scope="scope">
                     <el-button @click="handleUpdateShow(scope.row)" type="text" size="small">编辑</el-button>
@@ -40,8 +43,10 @@
                 <el-form-item label="权限名称:" prop="privilegeName">
                     <el-input v-model="sysPrivilege.privilegeName" autocomplete="off"></el-input>
                 </el-form-item>
-                <el-form-item label="父级ID:" prop="parentId">
-                    <el-input v-model="sysPrivilege.parentId" autocomplete="off"></el-input>
+                <el-form-item label="父级:" prop="parentId">
+                    <el-select v-model="sysPrivilege.parentId" filterable placeholder="父级">
+                        <el-option v-for="(item,key) in allPrivilegeList" :key="key" :value="item.id" :label="item.name"></el-option>
+                    </el-select>
                 </el-form-item>
             </el-form>
             <div slot="footer" class="dialog-footer">
@@ -57,8 +62,10 @@
                 <el-form-item label="权限名称:" prop="privilegeName">
                     <el-input v-model="sysPrivilege.privilegeName" autocomplete="off"></el-input>
                 </el-form-item>
-                <el-form-item label="父级ID:" prop="parentId">
-                    <el-input v-model="sysPrivilege.parentId" autocomplete="off"></el-input>
+                <el-form-item label="父级:" prop="parentId">
+                    <el-select v-model="sysPrivilege.parentId" filterable placeholder="父级">
+                        <el-option v-for="(item,key) in allPrivilegeList" :key="key" :value="item.id" :label="item.name"></el-option>
+                    </el-select>
                 </el-form-item>
             </el-form>
             <div slot="footer" class="dialog-footer">
@@ -93,6 +100,7 @@
                     privilegeName: null,
                     parentId: null,
                 },
+                allPrivilegeList: [],
                 rules: {
                     privilegeLabel: [{required: true, message: '权限标识不能为空'}],
                     privilegeName: [{required: true, message: '权限名称不能为空'}],
@@ -169,9 +177,27 @@
                     }
                 });
             },
+            formatParentPrivilege(row, column) {
+                let parentId = row.parentId;
+                for (let i = 0, size = this.allPrivilegeList.length; i < size; i ++) {
+                    if (this.allPrivilegeList[i].id === parentId) {
+                        return this.allPrivilegeList[i].name;
+                    }
+                }
+                return "";
+            }
         },
         mounted() {
             this.handleSearch();
+            this.$axios.post("/allPrivilege").then(response => {
+                let data = response.data;
+                if (data.status === 0) {
+                    let menuList = [];
+                    menuList.push({"id": 0, "name": "顶级"});
+                    menuList.push(...data.data);
+                    this.allPrivilegeList = menuList;
+                }
+            });
         },
         computed: {
             fullHeight() {

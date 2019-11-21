@@ -87,7 +87,7 @@
                     data: [],
                 },
                 sysSchedule: {
-                    gid: null,
+                    id: null,
                     scheduleName: null,
                     scheduleUrl: null,
                     startExecuteTime: null,
