@@ -65,6 +65,13 @@
                 <el-button type="primary" @click="handleSetPrivilege">确定</el-button>
             </div>
         </el-dialog>
+        <el-dialog title="分配菜单" :visible.sync="menuVisible" class="add-update-dialog">
+            <el-tree :data="menuTreeList" show-checkbox default-expand-all node-key="id" ref="menuTree" highlight-current></el-tree>
+            <div slot="footer" class="dialog-footer">
+                <el-button @click="menuVisible = false">取消</el-button>
+                <el-button type="primary" @click="handleSetMenu">确定</el-button>
+            </div>
+        </el-dialog>
     </div>
 </template>
 
@@ -72,7 +79,7 @@
     export default {
         data() {
             let validateRoleLabel = (rule, value, callback) => {
-                this.$axios.post("/checkRoleExist?roleLabel=" + this.sysRole.roleLabel).then(response => {
+                this.$axios.post("/checkRoleExist?roleLabel=" + this.sysRole.roleLabel + "&id=" + this.sysRole.id).then(response => {
                     let data = response.data;
                     if (data.status === 0) {
                         callback();
@@ -86,6 +93,13 @@
                 updateVisible: false,
                 privilegeVisible: false,
                 menuVisible: false,
+                roleId: null,
+                privilegeTreeList: [],
+                menuTreeList: [],
+                roleDistributeVO: {
+                    roleId: null,
+                    distributeIdList: [],
+                },
                 sysRoleVO: {
                     page: 1,
                     size: 10,
@@ -102,11 +116,9 @@
                     roleName: null,
                     roleLabel: null,
                 },
-                privilegeTreeList: [],
-                menuTreeList: [],
                 rules: {
                     roleName: [{required: true, message: '角色名称不能为空'}],
-                    roleLabel: [{required: true, message: '角色标识不能为空'},{validator:validateRoleLabel, trigger: 'blur'}],
+                    roleLabel: [{required: true, message: '角色标识不能为空'}, {validator: validateRoleLabel, trigger: 'blur'}],
                 },
             }
         },
@@ -180,25 +192,48 @@
                 });
             },
             handlePrivilegeShow(row) {
-                this.$axios.post('/getPrivilegeTree').then(response => {
+                this.roleDistributeVO.roleId = row.id;
+                this.$axios.post('/getPrivilegeTree?id=' + row.id).then(response => {
                     let data = response.data;
                     if (data.status === 0) {
-                        this.privilegeTreeList = data.data;
+                        this.privilegeTreeList = data.data.privilegeTree;
+                        this.$refs.privilegeTree.setCheckedKeys(data.data.privilegeList);
                     }
                 });
                 this.privilegeVisible = true;
             },
             handleMenuShow(row) {
-                this.$axios.post('/getMenuTree').then(response => {
+                this.roleDistributeVO.roleId = row.id;
+                this.$axios.post('/getMenuTree?id=' + row.id).then(response => {
                     let data = response.data;
                     if (data.status === 0) {
-                        this.menuTreeList = data.data;
+                        this.menuTreeList = data.data.menuTree;
+                        this.$refs.privilegeTree.setCheckedKeys(data.data.menuList);
                     }
                 });
                 this.menuVisible = true;
             },
             handleSetPrivilege() {
-
+                this.roleDistributeVO.distributeIdList = this.$refs.tree.getCheckedKeys();
+                this.$axios.post('/setRolePrivilege', this.roleDistributeVO).then(response => {
+                    let data = response.data;
+                    if (data.status === 0) {
+                        this.$message.success("分配成功");
+                    } else {
+                        this.$message.error(data.message);
+                    }
+                });
+            },
+            handleSetMenu() {
+                this.roleDistributeVO.distributeIdList = this.$refs.tree.getCheckedKeys();
+                this.$axios.post('/setRoleMenu', this.roleDistributeVO).then(response => {
+                    let data = response.data;
+                    if (data.status === 0) {
+                        this.$message.success("分配成功");
+                    } else {
+                        this.$message.error(data.message);
+                    }
+                });
             }
         },
         mounted() {
