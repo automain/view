@@ -27,7 +27,7 @@
                     <div class="right-menu-container">
                         <el-dropdown class="info-drop-down">
                             <div class="head-img-container">
-                                <el-avatar size="medium" src="https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif?imageView2/1/w/80/h/80"></el-avatar>
+                                <el-avatar size="medium" :src="headImg"></el-avatar>
                                 <div class="user-name">
                                     {{this.realName}}
                                     <i class="el-icon-arrow-down el-icon--right"></i>
@@ -271,6 +271,7 @@
                 fullHeight: document.documentElement.clientHeight,
                 breadcrumbItems: [],
                 realName: this.$session.get("realName"),
+                headImg: this.$axios.defaults.baseURL + this.$session.get("headImg"),
             };
         },
         methods: {

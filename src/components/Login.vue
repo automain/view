@@ -134,6 +134,7 @@
                         this.$session.set("menuData", data.data.menuData);
                         this.$session.set("privilege", data.data.privilege);
                         this.$session.set("realName", data.data.realName);
+                        this.$session.set("headImg", data.data.headImg);
                         this.$message.success(data.message);
                         this.$router.push("/index");
                     } else {
