@@ -5,13 +5,18 @@
                 <el-form-item>
                     <el-button type="success" icon="el-icon-plus" @click="handleAddShow">添加</el-button>
                 </el-form-item>
+                <el-form-item label="任务名称:">
+                    <el-input v-model="sysScheduleVO.scheduleName" placeholder="任务名称"></el-input>
+                </el-form-item>
+                <el-form-item label="任务地址:">
+                    <el-input v-model="sysScheduleVO.scheduleUrl" placeholder="任务地址"></el-input>
+                </el-form-item>
                 <el-form-item>
-                    <el-button type="warning" icon="el-icon-delete" @click="handleDelete">删除</el-button>
+                    <el-button type="primary" icon="el-icon-search" @click="handleSearch()">查询</el-button>
                 </el-form-item>
             </el-form>
         </el-card>
-        <el-table ref="multipleTable" :data="pageBean.data" tooltip-effect="dark" :height="fullHeight" @selection-change="selectToDelete" @filter-change="handleFilterChange">
-            <el-table-column type="selection" width="42" fixed="left"></el-table-column>
+        <el-table ref="multipleTable" :data="pageBean.data" tooltip-effect="dark" :height="fullHeight" @filter-change="handleFilterChange">
             <el-table-column prop="createTime" label="创建时间" width="160" :formatter="dateTimeFormatter"></el-table-column>
             <el-table-column prop="updateTime" label="更新时间" width="160" :formatter="dateTimeFormatter"></el-table-column>
             <el-table-column prop="scheduleName" label="任务名称"></el-table-column>
@@ -19,8 +24,11 @@
             <el-table-column prop="startExecuteTime" label="开始执行时间" width="160" :formatter="dateTimeFormatter"></el-table-column>
             <el-table-column prop="period" label="间隔时间(秒)"></el-table-column>
             <el-table-column prop="lastExecuteTime" label="上次执行时间" width="160" :formatter="dateTimeFormatter"></el-table-column>
-            <el-table-column fixed="right" label="操作" width="100">
+            <el-table-column prop="isValid" label="是否启用" width="160" :formatter="isValidFormatter"></el-table-column>
+            <el-table-column fixed="right" label="操作" width="200">
                 <template slot-scope="scope">
+                    <el-button v-if="scope.row.isValid === 1" @click="handleInValid(scope.row)" type="text" size="small">禁用</el-button>
+                    <el-button v-if="scope.row.isValid === 0" @click="handleValid(scope.row)" type="text" size="small">启用</el-button>
                     <el-button @click="handleUpdateShow(scope.row)" type="text" size="small">编辑</el-button>
                 </template>
             </el-table-column>
@@ -72,6 +80,16 @@
 <script>
     export default {
         data() {
+            let validateScheduleUrl = (rule, value, callback) => {
+                this.$axios.post("/checkScheduleExist?scheduleUrl=" + this.sysSchedule.scheduleUrl + "&id=" + this.sysSchedule.id).then(response => {
+                    let data = response.data;
+                    if (data.status === 0) {
+                        callback();
+                    } else {
+                        callback(new Error('任务地址已存在'));
+                    }
+                });
+            };
             return {
                 addVisible: false,
                 updateVisible: false,
@@ -79,7 +97,8 @@
                 sysScheduleVO: {
                     page: 1,
                     size: 10,
-                    idList: [],
+                    scheduleName: null,
+                    scheduleUrl: null,
                 },
                 pageBean: {
                     page: 1,
@@ -95,7 +114,7 @@
                 },
                 rules: {
                     scheduleName: [{required: true, message: '任务名称不能为空'}],
-                    scheduleUrl: [{required: true, message: '任务地址不能为空'}],
+                    scheduleUrl: [{required: true, message: '任务地址不能为空'}, {validator: validateScheduleUrl, trigger: 'blur'}],
                     startExecuteTime: [{required: true, message: '开始执行时间不能为空'}],
                     period: [{required: true, message: '间隔时间(秒)不能为空'}],
                 },
@@ -172,31 +191,35 @@
                     }
                 });
             },
-            selectToDelete(val) {
-                let idList = [];
-                for (let i = 0, size = val.length; i < size; i++) {
-                    idList.push(val[i].id);
-                }
-                this.sysScheduleVO.idList = idList;
-            },
-            handleDelete() {
-                if (this.sysScheduleVO.idList.length > 0) {
-                    this.$confirm("确定删除选中的数据?", "提示", {type: "warning"}).then(() => {
-                        this.$axios.post("/scheduleDelete", this.sysScheduleVO).then(response => {
-                            let data = response.data;
-                            if (data.status === 0) {
-                                this.$message.success("操作成功");
-                                this.handleSearch();
-                            } else {
-                                this.$message.error("操作失败");
-                            }
-                        });
-                    }).catch(() => {
-                        this.$message.info("取消删除");
+            handleInValid(row) {
+                this.$confirm("确定禁用?", "提示", {type: "warning"}).then(() => {
+                    this.$axios.post("/scheduleInValid?id=" + row.id).then(response => {
+                        let data = response.data;
+                        if (data.status === 0) {
+                            this.$message.success("操作成功");
+                            this.handleSearch();
+                        } else {
+                            this.$message.error("操作失败");
+                        }
                     });
-                } else {
-                    this.$message.warning("请选择要删除的数据");
-                }
+                }).catch(() => {
+                    this.$message.info("取消禁用");
+                });
+            },
+            handleValid(row) {
+                this.$confirm("确定启用?", "提示", {type: "warning"}).then(() => {
+                    this.$axios.post("/scheduleValid?id=" + row.id).then(response => {
+                        let data = response.data;
+                        if (data.status === 0) {
+                            this.$message.success("操作成功");
+                            this.handleSearch();
+                        } else {
+                            this.$message.error("操作失败");
+                        }
+                    });
+                }).catch(() => {
+                    this.$message.info("取消启用");
+                });
             },
         },
         mounted() {

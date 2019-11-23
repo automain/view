@@ -59,14 +59,14 @@
             </div>
         </el-dialog>
         <el-dialog title="分配权限" :visible.sync="privilegeVisible" class="add-update-dialog">
-            <el-tree :data="privilegeTreeList" show-checkbox default-expand-all node-key="id" ref="privilegeTree" highlight-current></el-tree>
+            <el-tree :data="privilegeTreeList" show-checkbox check-strictly default-expand-all node-key="id" ref="privilegeTree" highlight-current></el-tree>
             <div slot="footer" class="dialog-footer">
                 <el-button @click="privilegeVisible = false">取消</el-button>
                 <el-button type="primary" @click="handleSetPrivilege">确定</el-button>
             </div>
         </el-dialog>
         <el-dialog title="分配菜单" :visible.sync="menuVisible" class="add-update-dialog">
-            <el-tree :data="menuTreeList" show-checkbox default-expand-all node-key="id" ref="menuTree" highlight-current></el-tree>
+            <el-tree :data="menuTreeList" show-checkbox check-strictly default-expand-all node-key="id" ref="menuTree" highlight-current></el-tree>
             <div slot="footer" class="dialog-footer">
                 <el-button @click="menuVisible = false">取消</el-button>
                 <el-button type="primary" @click="handleSetMenu">确定</el-button>
@@ -208,13 +208,13 @@
                     let data = response.data;
                     if (data.status === 0) {
                         this.menuTreeList = data.data.menuTree;
-                        this.$refs.privilegeTree.setCheckedKeys(data.data.menuList);
+                        this.$refs.menuTree.setCheckedKeys(data.data.menuList);
                     }
                 });
                 this.menuVisible = true;
             },
             handleSetPrivilege() {
-                this.roleDistributeVO.distributeIdList = this.$refs.tree.getCheckedKeys();
+                this.roleDistributeVO.distributeIdList = this.$refs.privilegeTree.getCheckedKeys();
                 this.$axios.post('/setRolePrivilege', this.roleDistributeVO).then(response => {
                     let data = response.data;
                     if (data.status === 0) {
@@ -223,9 +223,10 @@
                         this.$message.error(data.message);
                     }
                 });
+                this.privilegeVisible = false;
             },
             handleSetMenu() {
-                this.roleDistributeVO.distributeIdList = this.$refs.tree.getCheckedKeys();
+                this.roleDistributeVO.distributeIdList = this.$refs.menuTree.getCheckedKeys();
                 this.$axios.post('/setRoleMenu', this.roleDistributeVO).then(response => {
                     let data = response.data;
                     if (data.status === 0) {
@@ -234,6 +235,7 @@
                         this.$message.error(data.message);
                     }
                 });
+                this.menuVisible = false;
             }
         },
         mounted() {

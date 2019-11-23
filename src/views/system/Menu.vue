@@ -74,7 +74,7 @@
                 <el-form-item label="菜单图标:" prop="menuIcon">
                     <el-input v-model="sysMenu.menuIcon" autocomplete="off"></el-input>
                 </el-form-item>
-                <el-form-item label="父级ID:" prop="parentId">
+                <el-form-item label="父级:" prop="parentId">
                     <el-select v-model="sysMenu.parentId" filterable placeholder="父级">
                         <el-option v-for="(item,key) in allValidMenuList" :key="key" :value="item.id" :label="item.name"></el-option>
                     </el-select>

@@ -16,6 +16,7 @@
                 </el-form-item>
                 <el-form-item label="角色:">
                     <el-select v-model="sysUserVO.roleLabel" filterable placeholder="请选择角色">
+                        <el-option value="" label="全部"></el-option>
                         <el-option v-for="item in allRoleList" :key="item.roleLabel" :label="item.roleName" :value="item.roleLabel"></el-option>
                     </el-select>
                 </el-form-item>
@@ -35,7 +36,7 @@
             <el-table-column prop="roleName" label="角色"></el-table-column>
             <el-table-column prop="headImg" label="头像">
                 <template slot-scope="scope">
-                    <el-avatar size="small" :src="baseUrl + scope.row.headImg"></el-avatar>
+                    <el-avatar class="list-head-img" fit="fill" shape="square" size="small" :src="baseUrl + scope.row.headImg"></el-avatar>
                 </template>
             </el-table-column>
             <el-table-column fixed="right" label="操作" width="100">
@@ -72,10 +73,10 @@
                 </el-form-item>
                 <el-form-item label="头像:" prop="headImgGid">
                     <el-upload class="avatar-uploader" :action="baseUrl + '/upload'"
-                            :show-file-list="false"
-                            :on-success="handleAvatarSuccess"
-                            :before-upload="beforeAvatarUpload">
-                        <img v-if="sysUser.headImg" :src="baseUrl + sysUser.headImg" class="avatar">
+                               :show-file-list="false"
+                               :on-success="handleAvatarSuccess"
+                               :before-upload="beforeAvatarUpload">
+                        <img v-if="sysUser.headImg" :src="sysUser.headImg" class="avatar">
                         <i v-else class="el-icon-plus avatar-uploader-icon"></i>
                     </el-upload>
                 </el-form-item>
@@ -109,7 +110,7 @@
                                :show-file-list="false"
                                :on-success="handleAvatarSuccess"
                                :before-upload="beforeAvatarUpload">
-                        <img v-if="sysUser.headImg" :src="baseUrl + sysUser.headImg" class="avatar">
+                        <img v-if="sysUser.headImg" :src="sysUser.headImg" class="avatar">
                         <i v-else class="el-icon-plus avatar-uploader-icon"></i>
                     </el-upload>
                 </el-form-item>
@@ -121,7 +122,26 @@
         </el-dialog>
     </div>
 </template>
-
+<style lang="scss">
+    $imgUploadBlockSize: 178px;
+    .list-head-img {
+        overflow: visible;
+    }
+    .avatar-uploader {
+        .avatar-uploader-icon {
+            font-size: 28px;
+            width: $imgUploadBlockSize;
+            height: $imgUploadBlockSize;
+            line-height: $imgUploadBlockSize;
+            text-align: center;
+        }
+        .avatar {
+            width: $imgUploadBlockSize;
+            height: $imgUploadBlockSize;
+            display: block;
+        }
+    }
+</style>
 <script>
     export default {
         data() {
@@ -179,12 +199,12 @@
                     userRoleList: [],
                 },
                 rules: {
-                    userName: [{required: true, message: '用户名不能为空'},{validator:validateUserName, trigger: 'blur'}],
+                    userName: [{required: true, message: '用户名不能为空'}, {validator: validateUserName, trigger: 'blur'}],
                     realName: [{required: true, message: '真实姓名不能为空'}],
                     phone: [{required: true, message: '手机号不能为空'}],
                     email: [{required: true, message: '邮箱不能为空'}],
-                    password: [{required: true, message: '密码不能为空'},{validator: validatePassword, trigger: 'blur'}],
-                    password2: [{required: true, message: '确认密码不能为空'},{validator: validatePassword2, trigger: 'blur'}],
+                    password: [{required: true, message: '密码不能为空'}, {validator: validatePassword, trigger: 'blur'}],
+                    password2: [{required: true, message: '确认密码不能为空'}, {validator: validatePassword2, trigger: 'blur'}],
                     userRoleList: [{required: true, message: '角色不能为空'}],
                 },
             }
@@ -215,6 +235,7 @@
                     let data = response.data;
                     if (data.status === 0) {
                         this.sysUser = data.data;
+                        this.sysUser.headImg = this.baseUrl + this.sysUser.headImg;
                     } else {
                         this.$message.error("操作失败");
                     }
@@ -289,16 +310,18 @@
                 this.sysUser.headImg = URL.createObjectURL(file.raw);
             },
             beforeAvatarUpload(file) {
-                const isJPG = file.type === 'image/jpeg';
-                const isLt2M = file.size / 1024 / 1024 < 2;
-
-                if (!isJPG) {
-                    this.$message.error('上传头像图片只能是 JPG 格式!');
+                let fileType = file.type;
+                let isImg = fileType === 'image/jpeg' || fileType === 'image/gif' || fileType === 'image/png';
+                let isLt2M = file.size / 1024 / 1024 < 2;
+                if (!isImg) {
+                    this.$message.error('仅支持jpg/png/gif图片格式文件');
+                    return false;
                 }
                 if (!isLt2M) {
-                    this.$message.error('上传头像图片大小不能超过 2MB!');
+                    this.$message.error('图片大小不能超过2MB');
+                    return false;
                 }
-                return isJPG && isLt2M;
+                return true;
             }
         },
         mounted() {

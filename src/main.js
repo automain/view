@@ -38,7 +38,8 @@ axiosObj.interceptors.response.use(function (response) {
         session.set('Authorization', authorization);
     }
     if (response.data.status === 403) {
-        router.push("/");
+        Vue.prototype.$message.error(response.data.message);
+        return Promise.reject(response.data.message);
     }
     return response;
 }, function (error) {
@@ -71,6 +72,9 @@ Vue.mixin({
         },
         dateFormatter(row, column) {
             return this.commonDateFormatter(row[column.property], "YYYY-MM-DD");
+        },
+        isValidFormatter(row, column) {
+            return row[column.property] === 1 ? "是" : "否";
         },
         getDictionaryMap(key, text) {
             let map = session.getMap("dictionaryMap").get(key);
