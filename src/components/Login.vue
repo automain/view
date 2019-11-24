@@ -131,10 +131,11 @@
                 this.$axios.post("/login", param).then(response => {
                     let data = response.data;
                     if (data.status === 0) {
+                        let headImg = data.data.headImg ? data.data.headImg : "";
                         this.$session.set("menuData", data.data.menuData);
                         this.$session.set("privilege", data.data.privilege);
                         this.$session.set("realName", data.data.realName);
-                        this.$session.set("headImg", data.data.headImg);
+                        this.$session.set("headImg", headImg);
                         this.$message.success(data.message);
                         this.$router.push("/index");
                     } else {

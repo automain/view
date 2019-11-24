@@ -51,10 +51,10 @@
                 <el-form-item label="用户名:" prop="userName">
                     <el-input v-model="sysUser.userName" autocomplete="off"></el-input>
                 </el-form-item>
-                <el-form-item label="密码" prop="password">
+                <el-form-item label="密码:" prop="password">
                     <el-input v-model="sysUser.password" autocomplete="off" type="password"></el-input>
                 </el-form-item>
-                <el-form-item label="确认密码" prop="password2">
+                <el-form-item label="确认密码:" prop="password2">
                     <el-input v-model="sysUser.password2" autocomplete="off" type="password"></el-input>
                 </el-form-item>
                 <el-form-item label="真实姓名:" prop="realName">
@@ -88,8 +88,8 @@
         </el-dialog>
         <el-dialog title="编辑" :visible.sync="updateVisible" class="add-update-dialog">
             <el-form :model="sysUser" ref="sysUserUpdate" :rules="rules" inline label-width="120px" size="mini">
-                <el-form-item label="用户名:" prop="userName">
-                    <el-input v-model="sysUser.userName" autocomplete="off" readonly></el-input>
+                <el-form-item label="用户名:">
+                    {{sysUser.userName}}
                 </el-form-item>
                 <el-form-item label="真实姓名:" prop="realName">
                     <el-input v-model="sysUser.realName" autocomplete="off"></el-input>
@@ -123,7 +123,7 @@
     </div>
 </template>
 <style lang="scss">
-    $imgUploadBlockSize: 178px;
+    @import "../../assets/css/variables";
     .list-head-img {
         overflow: visible;
     }

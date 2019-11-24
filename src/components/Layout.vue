@@ -25,17 +25,17 @@
                         </el-breadcrumb>
                     </div>
                     <div class="right-menu-container">
-                        <el-dropdown class="info-drop-down">
+                        <el-dropdown class="info-drop-down" @command="handleCommand">
                             <div class="head-img-container">
-                                <el-avatar size="medium" :src="headImg"></el-avatar>
+                                <el-avatar size="medium" :src="headImg"><img src="../assets/image/login_logo.png"/></el-avatar>
                                 <div class="user-name">
                                     {{this.realName}}
                                     <i class="el-icon-arrow-down el-icon--right"></i>
                                 </div>
                             </div>
                             <el-dropdown-menu slot="dropdown">
-                                <el-dropdown-item>基本资料</el-dropdown-item>
-                                <el-dropdown-item>修改密码</el-dropdown-item>
+                                <el-dropdown-item command="handleUpdateBaseInfoShow">基本资料</el-dropdown-item>
+                                <el-dropdown-item command="handleChangePasswordShow">修改密码</el-dropdown-item>
                             </el-dropdown-menu>
                         </el-dropdown>
                         <div class="logout-btn">
@@ -55,6 +55,52 @@
                 </el-main>
             </el-container>
         </el-container>
+        <el-dialog title="基本资料" :visible.sync="baseInfoVisible" class="add-update-dialog">
+            <el-form :model="userInfo" ref="baseInfoUpdate" :rules="baseInfoRules" inline label-width="120px" size="mini">
+                <el-form-item label="用户名:">
+                    {{userInfo.userName}}
+                </el-form-item>
+                <el-form-item label="真实姓名:" prop="realName">
+                    <el-input v-model="userInfo.realName" autocomplete="off"></el-input>
+                </el-form-item>
+                <el-form-item label="手机号:" prop="phone">
+                    <el-input v-model="userInfo.phone" autocomplete="off"></el-input>
+                </el-form-item>
+                <el-form-item label="邮箱:" prop="email">
+                    <el-input v-model="userInfo.email" autocomplete="off"></el-input>
+                </el-form-item>
+                <el-form-item label="头像:" prop="headImgGid">
+                    <el-upload class="avatar-uploader" :action="baseUrl + '/upload'"
+                               :show-file-list="false"
+                               :on-success="handleAvatarSuccess"
+                               :before-upload="beforeAvatarUpload">
+                        <img v-if="userInfo.headImg" :src="userInfo.headImg" class="avatar">
+                        <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+                    </el-upload>
+                </el-form-item>
+            </el-form>
+            <div slot="footer" class="dialog-footer">
+                <el-button @click="baseInfoVisible = false">取消</el-button>
+                <el-button type="primary" @click="handleUpdateBaseInfo">确定</el-button>
+            </div>
+        </el-dialog>
+        <el-dialog title="修改密码" :visible.sync="changePasswordVisible" class="add-update-dialog">
+            <el-form :model="changePassword" ref="userChangePassword" :rules="changePasswordRules" inline label-width="120px" size="mini">
+                <el-form-item label="原密码:" prop="oriPassword">
+                    <el-input v-model="changePassword.oriPassword" autocomplete="off" type="password"></el-input>
+                </el-form-item>
+                <el-form-item label="新密码:" prop="password">
+                    <el-input v-model="changePassword.password" autocomplete="off" type="password"></el-input>
+                </el-form-item>
+                <el-form-item label="确认新密码:" prop="password2">
+                    <el-input v-model="changePassword.password2" autocomplete="off" type="password"></el-input>
+                </el-form-item>
+            </el-form>
+            <div slot="footer" class="dialog-footer">
+                <el-button @click="changePasswordVisible = false">取消</el-button>
+                <el-button type="primary" @click="handleChangePassword">确定</el-button>
+            </div>
+        </el-dialog>
     </div>
 </template>
 <style lang="scss">
@@ -204,13 +250,13 @@
                             margin-bottom: 0;
                         }
                     }
-
-                    .add-update-dialog .el-input--mini {
-                        width: 200px;
-                    }
                 }
             }
         }
+    }
+
+    .add-update-dialog .el-input--mini {
+        width: 200px;
     }
 
     .hideSidebar {
@@ -256,6 +302,22 @@
             }
         }
     }
+
+    .avatar-uploader {
+        .avatar-uploader-icon {
+            font-size: 28px;
+            width: $imgUploadBlockSize;
+            height: $imgUploadBlockSize;
+            line-height: $imgUploadBlockSize;
+            text-align: center;
+        }
+
+        .avatar {
+            width: $imgUploadBlockSize;
+            height: $imgUploadBlockSize;
+            display: block;
+        }
+    }
 </style>
 <script>
     import Menu from "@/components/Menu";
@@ -263,6 +325,19 @@
     export default {
         components: {Menu},
         data() {
+            let validatePassword = (rule, value, callback) => {
+                if (this.changePassword.password2 !== '') {
+                    this.$refs.userChangePassword.validateField('password2');
+                }
+                callback();
+            };
+            let validatePassword2 = (rule, value, callback) => {
+                if (value !== this.changePassword.password) {
+                    callback(new Error('两次输入密码不一致'));
+                } else {
+                    callback();
+                }
+            };
             return {
                 menuData: [],
                 isCollapse: false,
@@ -272,7 +347,33 @@
                 breadcrumbItems: [],
                 realName: this.$session.get("realName"),
                 headImg: this.$axios.defaults.baseURL + this.$session.get("headImg"),
-            };
+                baseInfoVisible: false,
+                changePasswordVisible: false,
+                baseUrl: this.$axios.defaults.baseURL,
+                userInfo: {
+                    userName: null,
+                    realName: null,
+                    phone: null,
+                    email: null,
+                    headImgGid: null,
+                    headImg: null,
+                },
+                changePassword: {
+                    oriPassword: null,
+                    password: null,
+                    password2: null,
+                },
+                baseInfoRules: {
+                    realName: [{required: true, message: '真实姓名不能为空'}],
+                    phone: [{required: true, message: '手机号不能为空'}],
+                    email: [{required: true, message: '邮箱不能为空'}],
+                },
+                changePasswordRules: {
+                    oriPassword: [{required: true, message: '原密码不能为空'}],
+                    password: [{required: true, message: '新密码不能为空'}, {validator: validatePassword, trigger: 'blur'}],
+                    password2: [{required: true, message: '确认新密码不能为空'}, {validator: validatePassword2, trigger: 'blur'}],
+                },
+            }
         },
         methods: {
             menuCollapse() {
@@ -323,6 +424,86 @@
                     });
                 }).catch(() => {
                     this.$message.info('取消退出');
+                });
+            },
+            handleCommand(command) {
+                if ("handleUpdateBaseInfoShow" === command) {
+                    this.handleUpdateBaseInfoShow();
+                } else {
+                    this.handleChangePasswordShow();
+                }
+            },
+            handleUpdateBaseInfoShow() {
+                this.$axios.post("/userBaseInfo").then(response => {
+                    let data = response.data;
+                    if (data.status === 0) {
+                        this.userInfo = data.data;
+                        this.userInfo.headImg = this.baseUrl + this.userInfo.headImg;
+                        this.baseInfoVisible = true;
+                    } else {
+                        this.$message.error("操作失败");
+                    }
+                });
+            },
+            handleChangePasswordShow() {
+                this.changePassword.oriPassword = null;
+                this.changePassword.password = null;
+                this.changePassword.password2 = null;
+                if (this.$refs['userChangePassword']) {
+                    this.$refs['userChangePassword'].resetFields();
+                }
+                this.changePasswordVisible = true;
+            },
+            handleUpdateBaseInfo() {
+                this.$refs['baseInfoUpdate'].validate((valid) => {
+                    if (valid) {
+                        this.$axios.post('/userBaseInfoUpdate', this.userInfo).then(response => {
+                            let data = response.data;
+                            if (data.status === 0) {
+                                this.$message.success("操作成功");
+                                this.baseInfoVisible = false;
+                            } else {
+                                this.$message.error("操作失败");
+                            }
+                        });
+                    } else {
+                        return false;
+                    }
+                });
+            },
+            handleAvatarSuccess(res, file) {
+                this.userInfo.headImgGid = res.data.uploadFileGid;
+                this.userInfo.headImg = URL.createObjectURL(file.raw);
+            },
+            beforeAvatarUpload(file) {
+                let fileType = file.type;
+                let isImg = fileType === 'image/jpeg' || fileType === 'image/gif' || fileType === 'image/png';
+                let isLt2M = file.size / 1024 / 1024 < 2;
+                if (!isImg) {
+                    this.$message.error('仅支持jpg/png/gif图片格式文件');
+                    return false;
+                }
+                if (!isLt2M) {
+                    this.$message.error('图片大小不能超过2MB');
+                    return false;
+                }
+                return true;
+            },
+            handleChangePassword() {
+                this.$refs['userChangePassword'].validate((valid) => {
+                    if (valid) {
+                        this.$axios.post('/userChangePassword', this.changePassword).then(response => {
+                            let data = response.data;
+                            if (data.status === 0) {
+                                this.$message.success("操作成功");
+                                this.changePasswordVisible = false;
+                            } else {
+                                this.$message.error(data.message);
+                            }
+                        });
+                    } else {
+                        return false;
+                    }
                 });
             }
         },
