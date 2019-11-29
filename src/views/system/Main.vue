@@ -1,5 +1,5 @@
 <template>
     <div>
-        首页页面
+        源码地址:https://github.com/automain/automain
     </div>
 </template>
